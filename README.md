@@ -1,7 +1,7 @@
 <!--
  * @Author: FnoY fangying@westlake.edu.cn
  * @LastEditors: fnoy 1084585914@qq.com
- * @LastEditTime: 2023-09-15 16:40:23
+ * @LastEditTime: 2023-09-15 16:44:02
  * @FilePath: \UMA-ASR\README.md
 -->
 # UMA-ASR
@@ -44,3 +44,5 @@ This project works on non-autoregressive automatic speech recognition. A unimoda
     chmod -x run_unimodal.sh
     ```
 
+## Citation
+    TBC
