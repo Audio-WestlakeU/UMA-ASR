@@ -1,7 +1,7 @@
 <!--
  * @Author: FnoY fangying@westlake.edu.cn
  * @LastEditors: fnoy 1084585914@qq.com
- * @LastEditTime: 2023-09-15 16:31:21
+ * @LastEditTime: 2023-09-15 16:40:23
  * @FilePath: \UMA-ASR\README.md
 -->
 # UMA-ASR
@@ -14,6 +14,9 @@ This work is submitted to ICASSP 2024.
     <a href="https://github.com/Audio-WestlakeU/UMA-ASR/"><img src="https://img.shields.io/badge/Python-3.9-orange" alt="version"></a>
     <a href="https://github.com/Audio-WestlakeU/UMA-ASR/"><img src="https://img.shields.io/badge/PyTorch-1.13-brightgreen" alt="python"></a>
 </div>
+
+[Paper :star_struck:](TBC) **|** [Issues :sweat_smile:](https://github.com/Audio-WestlakeU/UMA-ASR/issues)
+ **|** [Lab :hear_no_evil:](https://github.com/Audio-WestlakeU) **|** [Contact :kissing_heart:](fangying@westlake.edu.cn)
 
 ## Introduction
 
@@ -41,5 +44,3 @@ This project works on non-autoregressive automatic speech recognition. A unimoda
     chmod -x run_unimodal.sh
     ```
 
-
-## Performance
