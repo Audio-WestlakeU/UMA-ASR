@@ -1,14 +1,14 @@
 <!--
  * @Author: FnoY fangying@westlake.edu.cn
  * @LastEditors: fnoy 1084585914@qq.com
- * @LastEditTime: 2023-09-15 16:24:51
+ * @LastEditTime: 2023-09-15 16:27:31
  * @FilePath: \UMA-ASR\README.md
 -->
 # UMA-ASR
 This repository is the official implementation of  "Unimodal Aggregation for CTC-based Speech Recognition".
 
 This work is submitted to ICASSP 2024.
-<div align="center">
+<div>
     </p>
     <a href="https://github.com/Audio-WestlakeU/UMA-ASR/"><img src="https://img.shields.io/badge/Platform-linux-lightgrey" alt="version"></a>
     <a href="https://github.com/Audio-WestlakeU/UMA-ASR/"><img src="https://img.shields.io/badge/Python-3.9-orange" alt="version"></a>
@@ -20,7 +20,7 @@ This work is submitted to ICASSP 2024.
 This project works on non-autoregressive automatic speech recognition. A unimodal aggregation (UMA) is proposed to segment and integrate the feature frames that belong to the same text token, and thus to learn better feature representations for text tokens. The frame-wise features and weights are both derived from an encoder. Then, the feature frames with unimodal weights are integrated and further processed by a decoder. Connectionist temporal classification (CTC) loss is applied for training. Moreover, by integrating self-conditioned CTC into the proposed framework, the performance can be further noticeably improved.
 
 <div align="center">
-<image src="./uma.pdf"  width="500" alt="The proposed UMA model" />
+<image src="./uma.png"  width="800" alt="The proposed UMA model" />
 </div>
 
 ## Get started
