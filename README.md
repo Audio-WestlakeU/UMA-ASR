@@ -1,8 +1,8 @@
 <!--
  * @Author: FnoY fangying@westlake.edu.cn
  * @LastEditors: fnoy 1084585914@qq.com
- * @LastEditTime: 2023-09-15 16:44:02
- * @FilePath: \UMA-ASR\README.md
+ * @LastEditTime: 2023-09-18 13:36:08
+ * @FilePath: \published_codes\UMA-ASR\README.md
 -->
 # UMA-ASR
 This repository is the official implementation of  "Unimodal Aggregation for CTC-based Speech Recognition".
@@ -15,7 +15,7 @@ This work is submitted to ICASSP 2024.
     <a href="https://github.com/Audio-WestlakeU/UMA-ASR/"><img src="https://img.shields.io/badge/PyTorch-1.13-brightgreen" alt="python"></a>
 </div>
 
-[Paper :star_struck:](TBC) **|** [Issues :sweat_smile:](https://github.com/Audio-WestlakeU/UMA-ASR/issues)
+[Paper :star_struck:](https://arxiv.org/abs/2309.08150) **|** [Issues :sweat_smile:](https://github.com/Audio-WestlakeU/UMA-ASR/issues)
  **|** [Lab :hear_no_evil:](https://github.com/Audio-WestlakeU) **|** [Contact :kissing_heart:](fangying@westlake.edu.cn)
 
 ## Introduction
