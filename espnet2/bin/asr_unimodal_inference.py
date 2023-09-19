@@ -1,6 +1,6 @@
 '''
 Author: FnoY fangying@westlake.edu.cn
-LastEditTime: 2023-09-15 14:20:50
+LastEditTime: 2023-09-19 12:56:21
 FilePath: espnet\espnet2\bin\asr_unimodal_inference.py
 '''
 #!/usr/bin/env python3
@@ -121,8 +121,6 @@ class Speech2Text:
 
         quantize_modules = set([getattr(torch.nn, q) for q in quantize_modules])
         quantize_dtype = getattr(torch, quantize_dtype)
-
-        self.enc_ctc_weight = 0.0
 
         # 1. Build ASR model
         scorers = {}
