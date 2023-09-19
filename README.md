@@ -1,7 +1,7 @@
 <!--
  * @Author: FnoY fangying@westlake.edu.cn
  * @LastEditors: fnoy 1084585914@qq.com
- * @LastEditTime: 2023-09-18 13:36:08
+ * @LastEditTime: 2023-09-19 12:45:43
  * @FilePath: \published_codes\UMA-ASR\README.md
 -->
 # UMA-ASR
@@ -28,13 +28,17 @@ This project works on non-autoregressive automatic speech recognition. A unimoda
 
 ## Get started
 1. The proposed method is implemented using [ESPnet2](https://github.com/espnet/espnet). So please make sure you have [installed ESPnet](https://espnet.github.io/espnet/installation.html#) successfully. 
-2. Clone the UMA-ASR codes by:
+2. Roll back [espnet](https://github.com/espnet/espnet/tree/v.202304) to the specified version as follows：
+    ```
+    git checkout v.202304
+    ```
+3. Clone the UMA-ASR codes by:
    ```
    git clone https://github.com/Audio-WestlakeU/UMA-ASR
    ```
-3. Copy the configurations of the recipes in the [egs2](https://github.com/Audio-WestlakeU/UMA-ASR/tree/main/egs2) folder to the corresponding directory in "espnet/egs2/". At present, experiments have only been conducted on AISHELL-1, AISHELL-2, HKUST dataset. If you want to experiment on other Chinese datasets, you can refer to these configurations.  
-4. Copy the files in the [espnet2](https://github.com/Audio-WestlakeU/UMA-ASR/tree/main/espnet2) folder to the corresponding folder in "espnet/espnet2", and check that the comment path in the file header matches your path.
-5. To experiment, follow the [ESPnet's steps](https://espnet.github.io/espnet/espnet2_tutorial.html#recipes-using-espnet2). You can implement UMA method by simply changing **run.sh** from the command line to our **run_unimodal.sh**.  For example:
+4. Copy the configurations of the recipes in the [egs2](https://github.com/Audio-WestlakeU/UMA-ASR/tree/main/egs2) folder to the corresponding directory in "espnet/egs2/". At present, experiments have only been conducted on AISHELL-1, AISHELL-2, HKUST dataset. If you want to experiment on other Chinese datasets, you can refer to these configurations.  
+5. Copy the files in the [espnet2](https://github.com/Audio-WestlakeU/UMA-ASR/tree/main/espnet2) folder to the corresponding folder in "espnet/espnet2", and check that the comment path in the file header matches your path.
+6. To experiment, follow the [ESPnet's steps](https://espnet.github.io/espnet/espnet2_tutorial.html#recipes-using-espnet2). You can implement UMA method by simply changing **run.sh** from the command line to our **run_unimodal.sh**.  For example:
     ```
     ./run_unimodal.sh --stage 10 --stop_stage 13
     ```
