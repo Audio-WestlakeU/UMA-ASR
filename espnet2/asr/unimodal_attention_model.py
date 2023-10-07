@@ -1,7 +1,7 @@
 '''
 Author: FnoY fangying@westlake.edu.cn
-LastEditTime: 2023-09-15 14:13:26
-FilePath: /espnet/espnet2/asr/unimodal_attention_model.py
+LastEditTime: 2023-10-07 11:59:31
+FilePath: \UMA-ASR\espnet2\asr\unimodal_attention_model.py
 '''
 import logging
 from contextlib import contextmanager
@@ -376,7 +376,7 @@ class UAMASRModel(AbsESPnetModel):
         # calculate whole intermediate loss
         loss = (
             1 - self.interctc_weight_enc - self.interctc_weight_dec
-        ) * loss + self.interctc_weight_enc * loss_interctc_enc + self.interctc_weight_dec * loss_interctc_dec
+        ) * loss_ctc + self.interctc_weight_enc * loss_interctc_enc + self.interctc_weight_dec * loss_interctc_dec
 
         # Collect total loss stats
         stats["loss"] = loss.detach()

@@ -1,8 +1,8 @@
 <!--
  * @Author: FnoY fangying@westlake.edu.cn
  * @LastEditors: fnoy 1084585914@qq.com
- * @LastEditTime: 2023-09-19 12:45:43
- * @FilePath: \published_codes\UMA-ASR\README.md
+ * @LastEditTime: 2023-10-07 11:58:15
+ * @FilePath: \UMA-ASR\README.md
 -->
 # UMA-ASR
 This repository is the official implementation of  "Unimodal Aggregation for CTC-based Speech Recognition".
@@ -49,4 +49,12 @@ This project works on non-autoregressive automatic speech recognition. A unimoda
     ```
 
 ## Citation
-TBC
+You can cite this paper like:
+```
+@article{fang2023unimodal,
+    title={Unimodal Aggregation for CTC-based Speech Recognition},
+    author={Ying Fang and Xiaofei Li},
+    journal={arXiv preprint arXiv:2309.08150},
+    year={2023}
+}
+```
