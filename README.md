@@ -7,7 +7,7 @@
 # UMA-ASR
 This repository is the official implementation of  "Unimodal Aggregation for CTC-based Speech Recognition".
 
-This work is submitted to ICASSP 2024.
+This work has been accepted by **ICASSP 2024**.
 <div>
     </p>
     <a href="https://github.com/Audio-WestlakeU/UMA-ASR/"><img src="https://img.shields.io/badge/Platform-linux-lightgrey" alt="version"></a>
