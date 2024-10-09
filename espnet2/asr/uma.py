@@ -1,9 +1,10 @@
 
 '''
 Author: FnoY fangying@westlake.edu.cn
-LastEditTime: 2023-09-15 14:31:51
-FilePath: /espnet/espnet2/asr/uma.py
-Notes: If the feature dimension changes from 256 to 512, just modify 'output_size: int = 256' to 'output_size: int = 512'.
+LastEditTime: 2024-10-09 14:49:17
+FilePath: \UMA-ASR\espnet2\asr\uma.py
+Notes:  If the feature dimension changes from 256 to 512, just modify 'output_size: int = 256' to 'output_size: int = 512';
+        If you want to use the early termination during inference, just set 'self.EarlyTermination = True'.
 '''
 # """Unimodal aggregation definition."""
 import logging
@@ -31,6 +32,8 @@ class UMA(torch.nn.Module):
             torch.nn.Linear(input_size, 1),
             torch.nn.Sigmoid(),
         )
+
+        self.EarlyTermination = False
 
     def output_size(self) -> int:
         return self._output_size
@@ -64,6 +67,11 @@ class UMA(torch.nn.Module):
         scalar_after = torch.nn.functional.pad(scalar_after,(0,0,0,1))  # (#batch, L, 1)
 
         mask = (uma_weights.lt(scalar_before)) & (uma_weights.lt(scalar_after)) # bool tensor (#batch, L, 1)
+
+        if not self.training and self.EarlyTermination:
+            mask2 = (uma_weights.gt(scalar_before)) & (uma_weights.gt(scalar_after)) # bool tensor (#batch, L, 1)
+            mask = mask | mask2
+
         mask = mask.reshape(uma_weights.shape[0], -1) # bool tensor (#batch, L)
         mask[:,0] = True
         # mask.nonzero() is [[0,0],[0,3],[0,7],...,[1,0],[1,2],...,[2,0],[2,4],...,[#batch-1,0],...]
@@ -98,8 +106,8 @@ class UMA(torch.nn.Module):
         alpha_h = torch.mul(uma_weights, xs_pad)
         xs_pad = torch.bmm(output_mask, alpha_h) / torch.bmm(output_mask, uma_weights).clamp_(1e-6)
  
-        olens = (olens / olens[0] * xs_pad.shape[1]).type_as(olens)
-        # olens = counts
+        # olens = (olens / olens[0] * xs_pad.shape[1]).type_as(olens)
+        olens = counts
         
         # return xs_pad, olens, uma_weights
         return xs_pad, olens, None

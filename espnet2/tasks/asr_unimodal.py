@@ -1,8 +1,3 @@
-'''
-Author: FnoY fangying@westlake.edu.cn
-LastEditTime: 2023-09-15 14:23:37
-FilePath: /espnet/espnet2/tasks/asr_unimodal.py
-'''
 import argparse
 import logging
 from typing import Callable, Collection, Dict, List, Optional, Tuple
@@ -32,8 +27,10 @@ from espnet2.asr.decoder.transformer_decoder import (
 )
 from espnet2.asr.decoder.whisper_decoder import OpenAIWhisperDecoder
 from espnet2.asr.encoder.abs_encoder import AbsEncoder
+from espnet2.asr.encoder.mamba_encoder import MambaEncoder
 from espnet2.asr.encoder.branchformer_encoder import BranchformerEncoder
 from espnet2.asr.encoder.conformer_encoder import ConformerEncoder
+from espnet2.asr.encoder.conformer_chunk_encoder import ConformerChunkEncoder
 from espnet2.asr.encoder.contextual_block_conformer_encoder import (
     ContextualBlockConformerEncoder,
 )
@@ -149,7 +146,9 @@ preencoder_choices = ClassChoices(
 encoder_choices = ClassChoices(
     "encoder",
     classes=dict(
+        mamba=MambaEncoder,
         conformer=ConformerEncoder,
+        conformer_chunk=ConformerChunkEncoder,
         transformer=TransformerEncoder,
         transformer_multispkr=TransformerEncoderMultiSpkr,
         contextual_block_transformer=ContextualBlockTransformerEncoder,
@@ -165,7 +164,7 @@ encoder_choices = ClassChoices(
         whisper=OpenAIWhisperEncoder,
         e_branchformer=EBranchformerEncoder,
     ),
-    type_check=AbsEncoder,
+    # type_check=AbsEncoder,
     default="rnn",
 )
 postencoder_choices = ClassChoices(
@@ -392,6 +391,13 @@ class ASRTask(AbsTask):
             help="Auxillary tasks to train on using CTC loss. ",
         )
 
+        parser.add_argument(
+            f"--uma_conf",
+            action=NestedDictAction,
+            default=dict(),
+            help=f"The keyword arguments for uma",
+        )
+
         for class_choices in cls.class_choices_list:
             # Append --<name> and --<name>_conf.
             # e.g. --encoder and --encoder_conf
@@ -563,7 +569,7 @@ class ASRTask(AbsTask):
             postencoder = None
 
         # UMA
-        uma = UMA()
+        uma = UMA(input_size=encoder_output_size, output_size=encoder_output_size)
 
         # 5. Decoder
         if getattr(args, "decoder", None) is not None:
