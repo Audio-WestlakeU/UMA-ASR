@@ -1,7 +1,7 @@
 <!--
  * @Author: FnoY fangying@westlake.edu.cn
  * @LastEditors: fnoy 1084585914@qq.com
- * @LastEditTime: 2024-10-09 15:00:48
+ * @LastEditTime: 2024-10-09 15:02:11
  * @FilePath: \UMA-ASR\README.md
 -->
 # UMA-ASR
