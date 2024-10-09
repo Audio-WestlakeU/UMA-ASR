@@ -1,7 +1,7 @@
 <!--
  * @Author: FnoY fangying@westlake.edu.cn
  * @LastEditors: fnoy 1084585914@qq.com
- * @LastEditTime: 2024-10-09 15:02:11
+ * @LastEditTime: 2024-10-09 15:04:18
  * @FilePath: \UMA-ASR\README.md
 -->
 # UMA-ASR
@@ -35,7 +35,7 @@ Mamba, a recently proposed state space model, has demonstrated the ability to ma
 implemented, which automatically detects token activity and streamingly triggers token output, and meanwhile aggregates feature frames for better learning token representation. Based on UMA, an early termination (ET) method is proposed to further reduce recognition latency.
 
 <div align="center">
-<image src="./mamba_uma.png"  width="400" alt="The proposed Mamba-UMA model" />
+<image src="./mamba_uma.png"  width="500" alt="The proposed Mamba-UMA model" />
 </div>
 
 
