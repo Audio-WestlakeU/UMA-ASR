@@ -78,6 +78,6 @@ You can cite this paper like:
     title={Mamba for Streaming ASR Combined with Unimodal Aggregation},
     author={Ying Fang and Xiaofei Li},
     journal={arXiv preprint arXiv:2410.00070},
-    year={2023}
+    year={2024}
 }
 ```
