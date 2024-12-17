@@ -1,7 +1,7 @@
 <!--
  * @Author: FnoY fangying@westlake.edu.cn
  * @LastEditors: fnoy 1084585914@qq.com
- * @LastEditTime: 2024-10-09 15:04:18
+ * @LastEditTime: 2024-10-09 15:06:27
  * @FilePath: \UMA-ASR\README.md
 -->
 # UMA-ASR
@@ -78,6 +78,6 @@ You can cite this paper like:
     title={Mamba for Streaming ASR Combined with Unimodal Aggregation},
     author={Ying Fang and Xiaofei Li},
     journal={arXiv preprint arXiv:2410.00070},
-    year={2023}
+    year={2024}
 }
 ```

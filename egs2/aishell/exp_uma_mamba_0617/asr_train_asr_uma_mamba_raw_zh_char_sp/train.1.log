@@ -1,0 +1,910 @@
+# python3 -m espnet2.bin.asr_unimodal_train --use_preprocessor true --bpemodel none --token_type char --token_list data/zh_token_list/char/tokens.txt --non_linguistic_symbols none --cleaner none --g2p none --valid_data_path_and_name_and_type dump/raw/dev/wav.scp,speech,kaldi_ark --valid_shape_file exp_uma_mamba_0617/asr_stats_raw_zh_char_sp/valid/speech_shape --resume true --ignore_init_mismatch false --fold_length 51200 --output_dir exp_uma_mamba_0617/asr_train_asr_uma_mamba_raw_zh_char_sp --config conf/train_asr_uma_mamba.yaml --frontend_conf fs=16k --normalize=global_mvn --normalize_conf stats_file=exp_uma_mamba_0617/asr_stats_raw_zh_char_sp/train/feats_stats.npz --train_data_path_and_name_and_type dump/raw/train_sp/wav.scp,speech,kaldi_ark --train_shape_file exp_uma_mamba_0617/asr_stats_raw_zh_char_sp/train/speech_shape --fold_length 150 --train_data_path_and_name_and_type dump/raw/train_sp/text,text,text --train_shape_file exp_uma_mamba_0617/asr_stats_raw_zh_char_sp/train/text_shape.char --valid_data_path_and_name_and_type dump/raw/dev/text,text,text --valid_shape_file exp_uma_mamba_0617/asr_stats_raw_zh_char_sp/valid/text_shape.char --ngpu 1 --multiprocessing_distributed True 
+# Started at Sat Aug  3 18:08:21 CST 2024
+#
+/data/home/fangying/anaconda3/envs/espnet/bin/python3 /data/home/fangying/espnet/espnet2/bin/asr_unimodal_train.py --use_preprocessor true --bpemodel none --token_type char --token_list data/zh_token_list/char/tokens.txt --non_linguistic_symbols none --cleaner none --g2p none --valid_data_path_and_name_and_type dump/raw/dev/wav.scp,speech,kaldi_ark --valid_shape_file exp_uma_mamba_0617/asr_stats_raw_zh_char_sp/valid/speech_shape --resume true --ignore_init_mismatch false --fold_length 51200 --output_dir exp_uma_mamba_0617/asr_train_asr_uma_mamba_raw_zh_char_sp --config conf/train_asr_uma_mamba.yaml --frontend_conf fs=16k --normalize=global_mvn --normalize_conf stats_file=exp_uma_mamba_0617/asr_stats_raw_zh_char_sp/train/feats_stats.npz --train_data_path_and_name_and_type dump/raw/train_sp/wav.scp,speech,kaldi_ark --train_shape_file exp_uma_mamba_0617/asr_stats_raw_zh_char_sp/train/speech_shape --fold_length 150 --train_data_path_and_name_and_type dump/raw/train_sp/text,text,text --train_shape_file exp_uma_mamba_0617/asr_stats_raw_zh_char_sp/train/text_shape.char --valid_data_path_and_name_and_type dump/raw/dev/text,text,text --valid_shape_file exp_uma_mamba_0617/asr_stats_raw_zh_char_sp/valid/text_shape.char --ngpu 1 --multiprocessing_distributed True
+[alab02] 2024-08-03 18:08:26,358 (asr_unimodal:530) INFO: Vocabulary size: 4233
+[alab02] 2024-08-03 18:08:29,273 (abs_task:1202) INFO: pytorch.version=1.12.1, cuda.available=True, cudnn.version=8302, cudnn.benchmark=False, cudnn.deterministic=True
+[alab02] 2024-08-03 18:08:29,280 (abs_task:1203) INFO: Model structure:
+UAMASRModel(
+  (frontend): DefaultFrontend(
+    (stft): Stft(n_fft=512, win_length=512, hop_length=128, center=True, normalized=False, onesided=True)
+    (frontend): Frontend()
+    (logmel): LogMel(sr=16000, n_fft=512, n_mels=80, fmin=0, fmax=8000.0, htk=False)
+  )
+  (specaug): SpecAug(
+    (time_warp): TimeWarp(window=5, mode=bicubic)
+    (freq_mask): MaskAlongAxis(mask_width_range=[0, 27], num_mask=2, axis=freq)
+    (time_mask): MaskAlongAxisVariableMaxWidth(mask_width_ratio_range=[0.0, 0.05], num_mask=10, axis=time)
+  )
+  (normalize): GlobalMVN(stats_file=exp_uma_mamba_0617/asr_stats_raw_zh_char_sp/train/feats_stats.npz, norm_means=True, norm_vars=True)
+  (encoder): MambaEncoder(
+    (embed): CausalConv2dSubsampling(
+      (subsample1): Sequential(
+        (0): Conv2d(1, 256, kernel_size=(3, 3), stride=(2, 2), padding=(2, 0))
+        (1): ReLU()
+      )
+      (subsample2): Sequential(
+        (0): Conv2d(256, 256, kernel_size=(3, 3), stride=(2, 2), padding=(2, 0))
+        (1): ReLU()
+      )
+      (out): Sequential(
+        (0): Linear(in_features=4864, out_features=256, bias=True)
+        (1): Dropout(p=0.1, inplace=False)
+      )
+    )
+    (norm_before_mamba): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+    (layers): ModuleList(
+      (0): Block(
+        (mixer): Mamba(
+          (in_proj): Linear(in_features=256, out_features=2048, bias=False)
+          (conv1d): Conv1d(1024, 1024, kernel_size=(4,), stride=(1,), padding=(3,), groups=1024)
+          (act): SiLU()
+          (x_proj): Linear(in_features=1024, out_features=48, bias=False)
+          (dt_proj): Linear(in_features=16, out_features=1024, bias=True)
+          (out_proj): Linear(in_features=1024, out_features=256, bias=False)
+        )
+        (norm): RMSNorm()
+      )
+      (1): Block(
+        (mixer): Mamba(
+          (in_proj): Linear(in_features=256, out_features=2048, bias=False)
+          (conv1d): Conv1d(1024, 1024, kernel_size=(4,), stride=(1,), padding=(3,), groups=1024)
+          (act): SiLU()
+          (x_proj): Linear(in_features=1024, out_features=48, bias=False)
+          (dt_proj): Linear(in_features=16, out_features=1024, bias=True)
+          (out_proj): Linear(in_features=1024, out_features=256, bias=False)
+        )
+        (norm): RMSNorm()
+      )
+      (2): Block(
+        (mixer): Mamba(
+          (in_proj): Linear(in_features=256, out_features=2048, bias=False)
+          (conv1d): Conv1d(1024, 1024, kernel_size=(4,), stride=(1,), padding=(3,), groups=1024)
+          (act): SiLU()
+          (x_proj): Linear(in_features=1024, out_features=48, bias=False)
+          (dt_proj): Linear(in_features=16, out_features=1024, bias=True)
+          (out_proj): Linear(in_features=1024, out_features=256, bias=False)
+        )
+        (norm): RMSNorm()
+      )
+      (3): Block(
+        (mixer): Mamba(
+          (in_proj): Linear(in_features=256, out_features=2048, bias=False)
+          (conv1d): Conv1d(1024, 1024, kernel_size=(4,), stride=(1,), padding=(3,), groups=1024)
+          (act): SiLU()
+          (x_proj): Linear(in_features=1024, out_features=48, bias=False)
+          (dt_proj): Linear(in_features=16, out_features=1024, bias=True)
+          (out_proj): Linear(in_features=1024, out_features=256, bias=False)
+        )
+        (norm): RMSNorm()
+      )
+      (4): Block(
+        (mixer): Mamba(
+          (in_proj): Linear(in_features=256, out_features=2048, bias=False)
+          (conv1d): Conv1d(1024, 1024, kernel_size=(4,), stride=(1,), padding=(3,), groups=1024)
+          (act): SiLU()
+          (x_proj): Linear(in_features=1024, out_features=48, bias=False)
+          (dt_proj): Linear(in_features=16, out_features=1024, bias=True)
+          (out_proj): Linear(in_features=1024, out_features=256, bias=False)
+        )
+        (norm): RMSNorm()
+      )
+      (5): Block(
+        (mixer): Mamba(
+          (in_proj): Linear(in_features=256, out_features=2048, bias=False)
+          (conv1d): Conv1d(1024, 1024, kernel_size=(4,), stride=(1,), padding=(3,), groups=1024)
+          (act): SiLU()
+          (x_proj): Linear(in_features=1024, out_features=48, bias=False)
+          (dt_proj): Linear(in_features=16, out_features=1024, bias=True)
+          (out_proj): Linear(in_features=1024, out_features=256, bias=False)
+        )
+        (norm): RMSNorm()
+      )
+      (6): Block(
+        (mixer): Mamba(
+          (in_proj): Linear(in_features=256, out_features=2048, bias=False)
+          (conv1d): Conv1d(1024, 1024, kernel_size=(4,), stride=(1,), padding=(3,), groups=1024)
+          (act): SiLU()
+          (x_proj): Linear(in_features=1024, out_features=48, bias=False)
+          (dt_proj): Linear(in_features=16, out_features=1024, bias=True)
+          (out_proj): Linear(in_features=1024, out_features=256, bias=False)
+        )
+        (norm): RMSNorm()
+      )
+      (7): Block(
+        (mixer): Mamba(
+          (in_proj): Linear(in_features=256, out_features=2048, bias=False)
+          (conv1d): Conv1d(1024, 1024, kernel_size=(4,), stride=(1,), padding=(3,), groups=1024)
+          (act): SiLU()
+          (x_proj): Linear(in_features=1024, out_features=48, bias=False)
+          (dt_proj): Linear(in_features=16, out_features=1024, bias=True)
+          (out_proj): Linear(in_features=1024, out_features=256, bias=False)
+        )
+        (norm): RMSNorm()
+      )
+      (8): Block(
+        (mixer): Mamba(
+          (in_proj): Linear(in_features=256, out_features=2048, bias=False)
+          (conv1d): Conv1d(1024, 1024, kernel_size=(4,), stride=(1,), padding=(3,), groups=1024)
+          (act): SiLU()
+          (x_proj): Linear(in_features=1024, out_features=48, bias=False)
+          (dt_proj): Linear(in_features=16, out_features=1024, bias=True)
+          (out_proj): Linear(in_features=1024, out_features=256, bias=False)
+        )
+        (norm): RMSNorm()
+      )
+      (9): Block(
+        (mixer): Mamba(
+          (in_proj): Linear(in_features=256, out_features=2048, bias=False)
+          (conv1d): Conv1d(1024, 1024, kernel_size=(4,), stride=(1,), padding=(3,), groups=1024)
+          (act): SiLU()
+          (x_proj): Linear(in_features=1024, out_features=48, bias=False)
+          (dt_proj): Linear(in_features=16, out_features=1024, bias=True)
+          (out_proj): Linear(in_features=1024, out_features=256, bias=False)
+        )
+        (norm): RMSNorm()
+      )
+      (10): Block(
+        (mixer): Mamba(
+          (in_proj): Linear(in_features=256, out_features=2048, bias=False)
+          (conv1d): Conv1d(1024, 1024, kernel_size=(4,), stride=(1,), padding=(3,), groups=1024)
+          (act): SiLU()
+          (x_proj): Linear(in_features=1024, out_features=48, bias=False)
+          (dt_proj): Linear(in_features=16, out_features=1024, bias=True)
+          (out_proj): Linear(in_features=1024, out_features=256, bias=False)
+        )
+        (norm): RMSNorm()
+      )
+      (11): Block(
+        (mixer): Mamba(
+          (in_proj): Linear(in_features=256, out_features=2048, bias=False)
+          (conv1d): Conv1d(1024, 1024, kernel_size=(4,), stride=(1,), padding=(3,), groups=1024)
+          (act): SiLU()
+          (x_proj): Linear(in_features=1024, out_features=48, bias=False)
+          (dt_proj): Linear(in_features=16, out_features=1024, bias=True)
+          (out_proj): Linear(in_features=1024, out_features=256, bias=False)
+        )
+        (norm): RMSNorm()
+      )
+      (12): Block(
+        (mixer): Mamba(
+          (in_proj): Linear(in_features=256, out_features=2048, bias=False)
+          (conv1d): Conv1d(1024, 1024, kernel_size=(4,), stride=(1,), padding=(3,), groups=1024)
+          (act): SiLU()
+          (x_proj): Linear(in_features=1024, out_features=48, bias=False)
+          (dt_proj): Linear(in_features=16, out_features=1024, bias=True)
+          (out_proj): Linear(in_features=1024, out_features=256, bias=False)
+        )
+        (norm): RMSNorm()
+      )
+      (13): Block(
+        (mixer): Mamba(
+          (in_proj): Linear(in_features=256, out_features=2048, bias=False)
+          (conv1d): Conv1d(1024, 1024, kernel_size=(4,), stride=(1,), padding=(3,), groups=1024)
+          (act): SiLU()
+          (x_proj): Linear(in_features=1024, out_features=48, bias=False)
+          (dt_proj): Linear(in_features=16, out_features=1024, bias=True)
+          (out_proj): Linear(in_features=1024, out_features=256, bias=False)
+        )
+        (norm): RMSNorm()
+      )
+      (14): Block(
+        (mixer): Mamba(
+          (in_proj): Linear(in_features=256, out_features=2048, bias=False)
+          (conv1d): Conv1d(1024, 1024, kernel_size=(4,), stride=(1,), padding=(3,), groups=1024)
+          (act): SiLU()
+          (x_proj): Linear(in_features=1024, out_features=48, bias=False)
+          (dt_proj): Linear(in_features=16, out_features=1024, bias=True)
+          (out_proj): Linear(in_features=1024, out_features=256, bias=False)
+        )
+        (norm): RMSNorm()
+      )
+      (15): Block(
+        (mixer): Mamba(
+          (in_proj): Linear(in_features=256, out_features=2048, bias=False)
+          (conv1d): Conv1d(1024, 1024, kernel_size=(4,), stride=(1,), padding=(3,), groups=1024)
+          (act): SiLU()
+          (x_proj): Linear(in_features=1024, out_features=48, bias=False)
+          (dt_proj): Linear(in_features=16, out_features=1024, bias=True)
+          (out_proj): Linear(in_features=1024, out_features=256, bias=False)
+        )
+        (norm): RMSNorm()
+      )
+      (16): Block(
+        (mixer): Mamba(
+          (in_proj): Linear(in_features=256, out_features=2048, bias=False)
+          (conv1d): Conv1d(1024, 1024, kernel_size=(4,), stride=(1,), padding=(3,), groups=1024)
+          (act): SiLU()
+          (x_proj): Linear(in_features=1024, out_features=48, bias=False)
+          (dt_proj): Linear(in_features=16, out_features=1024, bias=True)
+          (out_proj): Linear(in_features=1024, out_features=256, bias=False)
+        )
+        (norm): RMSNorm()
+      )
+      (17): Block(
+        (mixer): Mamba(
+          (in_proj): Linear(in_features=256, out_features=2048, bias=False)
+          (conv1d): Conv1d(1024, 1024, kernel_size=(4,), stride=(1,), padding=(3,), groups=1024)
+          (act): SiLU()
+          (x_proj): Linear(in_features=1024, out_features=48, bias=False)
+          (dt_proj): Linear(in_features=16, out_features=1024, bias=True)
+          (out_proj): Linear(in_features=1024, out_features=256, bias=False)
+        )
+        (norm): RMSNorm()
+      )
+      (18): Block(
+        (mixer): Mamba(
+          (in_proj): Linear(in_features=256, out_features=2048, bias=False)
+          (conv1d): Conv1d(1024, 1024, kernel_size=(4,), stride=(1,), padding=(3,), groups=1024)
+          (act): SiLU()
+          (x_proj): Linear(in_features=1024, out_features=48, bias=False)
+          (dt_proj): Linear(in_features=16, out_features=1024, bias=True)
+          (out_proj): Linear(in_features=1024, out_features=256, bias=False)
+        )
+        (norm): RMSNorm()
+      )
+      (19): Block(
+        (mixer): Mamba(
+          (in_proj): Linear(in_features=256, out_features=2048, bias=False)
+          (conv1d): Conv1d(1024, 1024, kernel_size=(4,), stride=(1,), padding=(3,), groups=1024)
+          (act): SiLU()
+          (x_proj): Linear(in_features=1024, out_features=48, bias=False)
+          (dt_proj): Linear(in_features=16, out_features=1024, bias=True)
+          (out_proj): Linear(in_features=1024, out_features=256, bias=False)
+        )
+        (norm): RMSNorm()
+      )
+      (20): Block(
+        (mixer): Mamba(
+          (in_proj): Linear(in_features=256, out_features=2048, bias=False)
+          (conv1d): Conv1d(1024, 1024, kernel_size=(4,), stride=(1,), padding=(3,), groups=1024)
+          (act): SiLU()
+          (x_proj): Linear(in_features=1024, out_features=48, bias=False)
+          (dt_proj): Linear(in_features=16, out_features=1024, bias=True)
+          (out_proj): Linear(in_features=1024, out_features=256, bias=False)
+        )
+        (norm): RMSNorm()
+      )
+      (21): Block(
+        (mixer): Mamba(
+          (in_proj): Linear(in_features=256, out_features=2048, bias=False)
+          (conv1d): Conv1d(1024, 1024, kernel_size=(4,), stride=(1,), padding=(3,), groups=1024)
+          (act): SiLU()
+          (x_proj): Linear(in_features=1024, out_features=48, bias=False)
+          (dt_proj): Linear(in_features=16, out_features=1024, bias=True)
+          (out_proj): Linear(in_features=1024, out_features=256, bias=False)
+        )
+        (norm): RMSNorm()
+      )
+      (22): Block(
+        (mixer): Mamba(
+          (in_proj): Linear(in_features=256, out_features=2048, bias=False)
+          (conv1d): Conv1d(1024, 1024, kernel_size=(4,), stride=(1,), padding=(3,), groups=1024)
+          (act): SiLU()
+          (x_proj): Linear(in_features=1024, out_features=48, bias=False)
+          (dt_proj): Linear(in_features=16, out_features=1024, bias=True)
+          (out_proj): Linear(in_features=1024, out_features=256, bias=False)
+        )
+        (norm): RMSNorm()
+      )
+      (23): Block(
+        (mixer): Mamba(
+          (in_proj): Linear(in_features=256, out_features=2048, bias=False)
+          (conv1d): Conv1d(1024, 1024, kernel_size=(4,), stride=(1,), padding=(3,), groups=1024)
+          (act): SiLU()
+          (x_proj): Linear(in_features=1024, out_features=48, bias=False)
+          (dt_proj): Linear(in_features=16, out_features=1024, bias=True)
+          (out_proj): Linear(in_features=1024, out_features=256, bias=False)
+        )
+        (norm): RMSNorm()
+      )
+      (24): Block(
+        (mixer): Mamba(
+          (in_proj): Linear(in_features=256, out_features=2048, bias=False)
+          (conv1d): Conv1d(1024, 1024, kernel_size=(4,), stride=(1,), padding=(3,), groups=1024)
+          (act): SiLU()
+          (x_proj): Linear(in_features=1024, out_features=48, bias=False)
+          (dt_proj): Linear(in_features=16, out_features=1024, bias=True)
+          (out_proj): Linear(in_features=1024, out_features=256, bias=False)
+        )
+        (norm): RMSNorm()
+      )
+      (25): Block(
+        (mixer): Mamba(
+          (in_proj): Linear(in_features=256, out_features=2048, bias=False)
+          (conv1d): Conv1d(1024, 1024, kernel_size=(4,), stride=(1,), padding=(3,), groups=1024)
+          (act): SiLU()
+          (x_proj): Linear(in_features=1024, out_features=48, bias=False)
+          (dt_proj): Linear(in_features=16, out_features=1024, bias=True)
+          (out_proj): Linear(in_features=1024, out_features=256, bias=False)
+        )
+        (norm): RMSNorm()
+      )
+      (26): Block(
+        (mixer): Mamba(
+          (in_proj): Linear(in_features=256, out_features=2048, bias=False)
+          (conv1d): Conv1d(1024, 1024, kernel_size=(4,), stride=(1,), padding=(3,), groups=1024)
+          (act): SiLU()
+          (x_proj): Linear(in_features=1024, out_features=48, bias=False)
+          (dt_proj): Linear(in_features=16, out_features=1024, bias=True)
+          (out_proj): Linear(in_features=1024, out_features=256, bias=False)
+        )
+        (norm): RMSNorm()
+      )
+      (27): Block(
+        (mixer): Mamba(
+          (in_proj): Linear(in_features=256, out_features=2048, bias=False)
+          (conv1d): Conv1d(1024, 1024, kernel_size=(4,), stride=(1,), padding=(3,), groups=1024)
+          (act): SiLU()
+          (x_proj): Linear(in_features=1024, out_features=48, bias=False)
+          (dt_proj): Linear(in_features=16, out_features=1024, bias=True)
+          (out_proj): Linear(in_features=1024, out_features=256, bias=False)
+        )
+        (norm): RMSNorm()
+      )
+      (28): Block(
+        (mixer): Mamba(
+          (in_proj): Linear(in_features=256, out_features=2048, bias=False)
+          (conv1d): Conv1d(1024, 1024, kernel_size=(4,), stride=(1,), padding=(3,), groups=1024)
+          (act): SiLU()
+          (x_proj): Linear(in_features=1024, out_features=48, bias=False)
+          (dt_proj): Linear(in_features=16, out_features=1024, bias=True)
+          (out_proj): Linear(in_features=1024, out_features=256, bias=False)
+        )
+        (norm): RMSNorm()
+      )
+      (29): Block(
+        (mixer): Mamba(
+          (in_proj): Linear(in_features=256, out_features=2048, bias=False)
+          (conv1d): Conv1d(1024, 1024, kernel_size=(4,), stride=(1,), padding=(3,), groups=1024)
+          (act): SiLU()
+          (x_proj): Linear(in_features=1024, out_features=48, bias=False)
+          (dt_proj): Linear(in_features=16, out_features=1024, bias=True)
+          (out_proj): Linear(in_features=1024, out_features=256, bias=False)
+        )
+        (norm): RMSNorm()
+      )
+      (30): Block(
+        (mixer): Mamba(
+          (in_proj): Linear(in_features=256, out_features=2048, bias=False)
+          (conv1d): Conv1d(1024, 1024, kernel_size=(4,), stride=(1,), padding=(3,), groups=1024)
+          (act): SiLU()
+          (x_proj): Linear(in_features=1024, out_features=48, bias=False)
+          (dt_proj): Linear(in_features=16, out_features=1024, bias=True)
+          (out_proj): Linear(in_features=1024, out_features=256, bias=False)
+        )
+        (norm): RMSNorm()
+      )
+      (31): Block(
+        (mixer): Mamba(
+          (in_proj): Linear(in_features=256, out_features=2048, bias=False)
+          (conv1d): Conv1d(1024, 1024, kernel_size=(4,), stride=(1,), padding=(3,), groups=1024)
+          (act): SiLU()
+          (x_proj): Linear(in_features=1024, out_features=48, bias=False)
+          (dt_proj): Linear(in_features=16, out_features=1024, bias=True)
+          (out_proj): Linear(in_features=1024, out_features=256, bias=False)
+        )
+        (norm): RMSNorm()
+      )
+      (32): Block(
+        (mixer): Mamba(
+          (in_proj): Linear(in_features=256, out_features=2048, bias=False)
+          (conv1d): Conv1d(1024, 1024, kernel_size=(4,), stride=(1,), padding=(3,), groups=1024)
+          (act): SiLU()
+          (x_proj): Linear(in_features=1024, out_features=48, bias=False)
+          (dt_proj): Linear(in_features=16, out_features=1024, bias=True)
+          (out_proj): Linear(in_features=1024, out_features=256, bias=False)
+        )
+        (norm): RMSNorm()
+      )
+      (33): Block(
+        (mixer): Mamba(
+          (in_proj): Linear(in_features=256, out_features=2048, bias=False)
+          (conv1d): Conv1d(1024, 1024, kernel_size=(4,), stride=(1,), padding=(3,), groups=1024)
+          (act): SiLU()
+          (x_proj): Linear(in_features=1024, out_features=48, bias=False)
+          (dt_proj): Linear(in_features=16, out_features=1024, bias=True)
+          (out_proj): Linear(in_features=1024, out_features=256, bias=False)
+        )
+        (norm): RMSNorm()
+      )
+      (34): Block(
+        (mixer): Mamba(
+          (in_proj): Linear(in_features=256, out_features=2048, bias=False)
+          (conv1d): Conv1d(1024, 1024, kernel_size=(4,), stride=(1,), padding=(3,), groups=1024)
+          (act): SiLU()
+          (x_proj): Linear(in_features=1024, out_features=48, bias=False)
+          (dt_proj): Linear(in_features=16, out_features=1024, bias=True)
+          (out_proj): Linear(in_features=1024, out_features=256, bias=False)
+        )
+        (norm): RMSNorm()
+      )
+      (35): Block(
+        (mixer): Mamba(
+          (in_proj): Linear(in_features=256, out_features=2048, bias=False)
+          (conv1d): Conv1d(1024, 1024, kernel_size=(4,), stride=(1,), padding=(3,), groups=1024)
+          (act): SiLU()
+          (x_proj): Linear(in_features=1024, out_features=48, bias=False)
+          (dt_proj): Linear(in_features=16, out_features=1024, bias=True)
+          (out_proj): Linear(in_features=1024, out_features=256, bias=False)
+        )
+        (norm): RMSNorm()
+      )
+    )
+    (norm_f): RMSNorm()
+    (lookahead_cnn): Conv1d(256, 256, kernel_size=(17,), stride=(1,), padding=(8,))
+    (activation): Swish()
+    (lookahead_norm): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+    (dropout): Dropout(p=0.1, inplace=False)
+  )
+  (uma): UMA(
+    (linear_sigmoid): Sequential(
+      (0): Linear(in_features=256, out_features=1, bias=True)
+      (1): Sigmoid()
+    )
+    (after_norm): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+  )
+  (decoder): UnimodalAttentionDecoder(
+    (embed): Sequential(
+      (0): Linear(in_features=256, out_features=256, bias=True)
+      (1): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+      (2): Dropout(p=0.1, inplace=False)
+      (3): Swish()
+      (4): PositionalEncoding(
+        (dropout): Dropout(p=0.1, inplace=False)
+      )
+    )
+    (encoders): MultiSequential(
+      (0): EncoderLayer(
+        (self_attn): StreamingMultiHeadedAttention(
+          (linear_q): Linear(in_features=256, out_features=256, bias=True)
+          (linear_k): Linear(in_features=256, out_features=256, bias=True)
+          (linear_v): Linear(in_features=256, out_features=256, bias=True)
+          (linear_out): Linear(in_features=256, out_features=256, bias=True)
+          (dropout): Dropout(p=0.0, inplace=False)
+        )
+        (feed_forward): PositionwiseFeedForward(
+          (w_1): Linear(in_features=256, out_features=2048, bias=True)
+          (w_2): Linear(in_features=2048, out_features=256, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (activation): ReLU()
+        )
+        (norm1): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm2): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (dropout): Dropout(p=0.1, inplace=False)
+      )
+      (1): EncoderLayer(
+        (self_attn): StreamingMultiHeadedAttention(
+          (linear_q): Linear(in_features=256, out_features=256, bias=True)
+          (linear_k): Linear(in_features=256, out_features=256, bias=True)
+          (linear_v): Linear(in_features=256, out_features=256, bias=True)
+          (linear_out): Linear(in_features=256, out_features=256, bias=True)
+          (dropout): Dropout(p=0.0, inplace=False)
+        )
+        (feed_forward): PositionwiseFeedForward(
+          (w_1): Linear(in_features=256, out_features=2048, bias=True)
+          (w_2): Linear(in_features=2048, out_features=256, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (activation): ReLU()
+        )
+        (norm1): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm2): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (dropout): Dropout(p=0.1, inplace=False)
+      )
+      (2): EncoderLayer(
+        (self_attn): StreamingMultiHeadedAttention(
+          (linear_q): Linear(in_features=256, out_features=256, bias=True)
+          (linear_k): Linear(in_features=256, out_features=256, bias=True)
+          (linear_v): Linear(in_features=256, out_features=256, bias=True)
+          (linear_out): Linear(in_features=256, out_features=256, bias=True)
+          (dropout): Dropout(p=0.0, inplace=False)
+        )
+        (feed_forward): PositionwiseFeedForward(
+          (w_1): Linear(in_features=256, out_features=2048, bias=True)
+          (w_2): Linear(in_features=2048, out_features=256, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (activation): ReLU()
+        )
+        (norm1): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm2): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (dropout): Dropout(p=0.1, inplace=False)
+      )
+      (3): EncoderLayer(
+        (self_attn): StreamingMultiHeadedAttention(
+          (linear_q): Linear(in_features=256, out_features=256, bias=True)
+          (linear_k): Linear(in_features=256, out_features=256, bias=True)
+          (linear_v): Linear(in_features=256, out_features=256, bias=True)
+          (linear_out): Linear(in_features=256, out_features=256, bias=True)
+          (dropout): Dropout(p=0.0, inplace=False)
+        )
+        (feed_forward): PositionwiseFeedForward(
+          (w_1): Linear(in_features=256, out_features=2048, bias=True)
+          (w_2): Linear(in_features=2048, out_features=256, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (activation): ReLU()
+        )
+        (norm1): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm2): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (dropout): Dropout(p=0.1, inplace=False)
+      )
+      (4): EncoderLayer(
+        (self_attn): StreamingMultiHeadedAttention(
+          (linear_q): Linear(in_features=256, out_features=256, bias=True)
+          (linear_k): Linear(in_features=256, out_features=256, bias=True)
+          (linear_v): Linear(in_features=256, out_features=256, bias=True)
+          (linear_out): Linear(in_features=256, out_features=256, bias=True)
+          (dropout): Dropout(p=0.0, inplace=False)
+        )
+        (feed_forward): PositionwiseFeedForward(
+          (w_1): Linear(in_features=256, out_features=2048, bias=True)
+          (w_2): Linear(in_features=2048, out_features=256, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (activation): ReLU()
+        )
+        (norm1): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm2): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (dropout): Dropout(p=0.1, inplace=False)
+      )
+      (5): EncoderLayer(
+        (self_attn): StreamingMultiHeadedAttention(
+          (linear_q): Linear(in_features=256, out_features=256, bias=True)
+          (linear_k): Linear(in_features=256, out_features=256, bias=True)
+          (linear_v): Linear(in_features=256, out_features=256, bias=True)
+          (linear_out): Linear(in_features=256, out_features=256, bias=True)
+          (dropout): Dropout(p=0.0, inplace=False)
+        )
+        (feed_forward): PositionwiseFeedForward(
+          (w_1): Linear(in_features=256, out_features=2048, bias=True)
+          (w_2): Linear(in_features=2048, out_features=256, bias=True)
+          (dropout): Dropout(p=0.1, inplace=False)
+          (activation): ReLU()
+        )
+        (norm1): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (norm2): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+        (dropout): Dropout(p=0.1, inplace=False)
+      )
+    )
+    (after_norm): LayerNorm((256,), eps=1e-12, elementwise_affine=True)
+  )
+  (criterion_att): LabelSmoothingLoss(
+    (criterion): KLDivLoss()
+  )
+  (ctc): CTC(
+    (ctc_lo): Linear(in_features=256, out_features=4233, bias=True)
+    (ctc_loss): CTCLoss()
+  )
+)
+
+Model summary:
+    Class Name: UAMASRModel
+    Total Number of model parameters: 43.53 M
+    Number of trainable parameters: 43.53 M (100.0%)
+    Size: 174.11 MB
+    Type: torch.float32
+[alab02] 2024-08-03 18:08:29,280 (abs_task:1206) INFO: Optimizer:
+AdamW (
+Parameter Group 0
+    amsgrad: False
+    betas: (0.9, 0.999)
+    capturable: False
+    eps: 1e-08
+    foreach: None
+    initial_lr: 0.001
+    lr: 4e-08
+    maximize: False
+    weight_decay: 0.01
+)
+[alab02] 2024-08-03 18:08:29,280 (abs_task:1207) INFO: Scheduler: WarmupLR(warmup_steps=25000)
+[alab02] 2024-08-03 18:08:29,281 (abs_task:1216) INFO: Saving the configuration in exp_uma_mamba_0617/asr_train_asr_uma_mamba_raw_zh_char_sp/config.yaml
+[alab02] 2024-08-03 18:08:30,362 (asr_unimodal:501) INFO: Optional Data Names: ('text_spk2', 'text_spk3', 'text_spk4')
+[alab02] 2024-08-03 18:08:32,993 (abs_task:1571) INFO: [train] dataset:
+ESPnetDataset(
+  speech: {"path": "dump/raw/train_sp/wav.scp", "type": "kaldi_ark"}
+  text: {"path": "dump/raw/train_sp/text", "type": "text"}
+  preprocess: <espnet2.train.preprocessor.CommonPreprocessor object at 0x7fbf27a5a610>)
+[alab02] 2024-08-03 18:08:32,993 (abs_task:1572) INFO: [train] Batch sampler: FoldedBatchSampler(N-batch=5515, batch_size=128, shape_files=['exp_uma_mamba_0617/asr_stats_raw_zh_char_sp/train/speech_shape', 'exp_uma_mamba_0617/asr_stats_raw_zh_char_sp/train/text_shape.char'], sort_in_batch=descending, sort_batch=descending)
+[alab02] 2024-08-03 18:08:32,994 (abs_task:1573) INFO: [train] mini-batch sizes summary: N-batch=5515, mean=65.3, min=2, max=128
+[alab02] 2024-08-03 18:08:33,054 (asr_unimodal:501) INFO: Optional Data Names: ('text_spk2', 'text_spk3', 'text_spk4')
+[alab02] 2024-08-03 18:08:33,097 (abs_task:1571) INFO: [valid] dataset:
+ESPnetDataset(
+  speech: {"path": "dump/raw/dev/wav.scp", "type": "kaldi_ark"}
+  text: {"path": "dump/raw/dev/text", "type": "text"}
+  preprocess: <espnet2.train.preprocessor.CommonPreprocessor object at 0x7fbe687c53a0>)
+[alab02] 2024-08-03 18:08:33,097 (abs_task:1572) INFO: [valid] Batch sampler: FoldedBatchSampler(N-batch=220, batch_size=128, shape_files=['exp_uma_mamba_0617/asr_stats_raw_zh_char_sp/valid/speech_shape', 'exp_uma_mamba_0617/asr_stats_raw_zh_char_sp/valid/text_shape.char'], sort_in_batch=descending, sort_batch=descending)
+[alab02] 2024-08-03 18:08:33,098 (abs_task:1573) INFO: [valid] mini-batch sizes summary: N-batch=220, mean=65.1, min=32, max=128
+[alab02] 2024-08-03 18:08:33,116 (asr_unimodal:501) INFO: Optional Data Names: ('text_spk2', 'text_spk3', 'text_spk4')
+[alab02] 2024-08-03 18:08:33,158 (abs_task:1571) INFO: [plot_att] dataset:
+ESPnetDataset(
+  speech: {"path": "dump/raw/dev/wav.scp", "type": "kaldi_ark"}
+  text: {"path": "dump/raw/dev/text", "type": "text"}
+  preprocess: <espnet2.train.preprocessor.CommonPreprocessor object at 0x7fbe687c5b50>)
+[alab02] 2024-08-03 18:08:33,158 (abs_task:1572) INFO: [plot_att] Batch sampler: UnsortedBatchSampler(N-batch=14326, batch_size=1, key_file=exp_uma_mamba_0617/asr_stats_raw_zh_char_sp/valid/speech_shape, 
+[alab02] 2024-08-03 18:08:33,158 (abs_task:1573) INFO: [plot_att] mini-batch sizes summary: N-batch=3, mean=1.0, min=1, max=1
+[alab02] 2024-08-03 18:08:33,974 (trainer:159) INFO: The training was resumed using exp_uma_mamba_0617/asr_train_asr_uma_mamba_raw_zh_char_sp/checkpoint.pth
+[alab02] 2024-08-03 18:08:34,041 (trainer:284) INFO: 40/50epoch started
+[alab02] 2024-08-03 18:10:07,474 (trainer:720) INFO: 40epoch:train:1-275batch: iter_time=0.003, forward_time=0.098, uma_reduction=0.203, text_vs_uma=0.509, loss_ctc=3.578, loss=3.578, backward_time=0.117, optim_step_time=0.047, optim0_lr0=3.408e-04, train_time=0.339
+[alab02] 2024-08-03 18:11:35,475 (trainer:720) INFO: 40epoch:train:276-550batch: iter_time=1.566e-04, forward_time=0.089, uma_reduction=0.205, text_vs_uma=0.506, loss_ctc=3.559, loss=3.559, backward_time=0.111, optim_step_time=0.046, optim0_lr0=3.406e-04, train_time=0.320
+[alab02] 2024-08-03 18:13:03,169 (trainer:720) INFO: 40epoch:train:551-825batch: iter_time=1.701e-04, forward_time=0.089, uma_reduction=0.207, text_vs_uma=0.500, loss_ctc=3.439, loss=3.439, backward_time=0.111, optim_step_time=0.045, optim0_lr0=3.404e-04, train_time=0.319
+[alab02] 2024-08-03 18:14:30,223 (trainer:720) INFO: 40epoch:train:826-1100batch: iter_time=1.616e-04, forward_time=0.089, uma_reduction=0.206, text_vs_uma=0.501, loss_ctc=3.195, loss=3.195, backward_time=0.111, optim_step_time=0.045, optim0_lr0=3.402e-04, train_time=0.316
+[alab02] 2024-08-03 18:15:57,040 (trainer:720) INFO: 40epoch:train:1101-1375batch: iter_time=1.592e-04, forward_time=0.088, uma_reduction=0.206, text_vs_uma=0.506, loss_ctc=3.327, loss=3.327, backward_time=0.110, optim_step_time=0.046, optim0_lr0=3.400e-04, train_time=0.315
+[alab02] 2024-08-03 18:17:21,723 (trainer:720) INFO: 40epoch:train:1376-1650batch: iter_time=1.281e-04, forward_time=0.085, uma_reduction=0.200, text_vs_uma=0.516, loss_ctc=3.629, loss=3.629, backward_time=0.106, optim_step_time=0.043, optim0_lr0=3.397e-04, train_time=0.308
+[alab02] 2024-08-03 18:18:48,211 (trainer:720) INFO: 40epoch:train:1651-1925batch: iter_time=1.290e-04, forward_time=0.086, uma_reduction=0.200, text_vs_uma=0.514, loss_ctc=3.723, loss=3.723, backward_time=0.109, optim_step_time=0.044, optim0_lr0=3.395e-04, train_time=0.314
+[alab02] 2024-08-03 18:20:14,239 (trainer:720) INFO: 40epoch:train:1926-2200batch: iter_time=1.469e-04, forward_time=0.086, uma_reduction=0.200, text_vs_uma=0.521, loss_ctc=3.483, loss=3.483, backward_time=0.111, optim_step_time=0.043, optim0_lr0=3.393e-04, train_time=0.313
+[alab02] 2024-08-03 18:21:39,402 (trainer:720) INFO: 40epoch:train:2201-2475batch: iter_time=1.674e-04, forward_time=0.085, uma_reduction=0.202, text_vs_uma=0.511, loss_ctc=3.557, loss=3.557, backward_time=0.107, optim_step_time=0.044, optim0_lr0=3.391e-04, train_time=0.309
+[alab02] 2024-08-03 18:22:12,651 (trainer:662) WARNING: The grad norm is nan. Skipping updating the model.
+[alab02] 2024-08-03 18:23:04,821 (trainer:720) INFO: 40epoch:train:2476-2750batch: iter_time=1.396e-04, forward_time=0.085, uma_reduction=0.207, text_vs_uma=0.500, loss_ctc=3.419, loss=3.419, backward_time=0.108, optim_step_time=0.043, optim0_lr0=3.389e-04, train_time=0.310
+[alab02] 2024-08-03 18:24:30,908 (trainer:720) INFO: 40epoch:train:2751-3025batch: iter_time=1.783e-04, forward_time=0.086, uma_reduction=0.205, text_vs_uma=0.506, loss_ctc=3.574, loss=3.574, backward_time=0.110, optim_step_time=0.044, optim0_lr0=3.387e-04, train_time=0.313
+[alab02] 2024-08-03 18:25:58,758 (trainer:720) INFO: 40epoch:train:3026-3300batch: iter_time=1.808e-04, forward_time=0.089, uma_reduction=0.202, text_vs_uma=0.509, loss_ctc=3.788, loss=3.788, backward_time=0.111, optim_step_time=0.044, optim0_lr0=3.385e-04, train_time=0.319
+[alab02] 2024-08-03 18:27:24,558 (trainer:720) INFO: 40epoch:train:3301-3575batch: iter_time=1.680e-04, forward_time=0.085, uma_reduction=0.200, text_vs_uma=0.518, loss_ctc=3.618, loss=3.618, backward_time=0.108, optim_step_time=0.044, optim0_lr0=3.382e-04, train_time=0.312
+[alab02] 2024-08-03 18:28:50,715 (trainer:720) INFO: 40epoch:train:3576-3850batch: iter_time=1.705e-04, forward_time=0.086, uma_reduction=0.201, text_vs_uma=0.518, loss_ctc=3.636, loss=3.636, backward_time=0.110, optim_step_time=0.043, optim0_lr0=3.380e-04, train_time=0.313
+[alab02] 2024-08-03 18:30:15,789 (trainer:720) INFO: 40epoch:train:3851-4125batch: iter_time=1.429e-04, forward_time=0.084, uma_reduction=0.200, text_vs_uma=0.518, loss_ctc=3.519, loss=3.519, backward_time=0.108, optim_step_time=0.043, optim0_lr0=3.378e-04, train_time=0.309
+[alab02] 2024-08-03 18:31:43,508 (trainer:720) INFO: 40epoch:train:4126-4400batch: iter_time=1.443e-04, forward_time=0.088, uma_reduction=0.201, text_vs_uma=0.515, loss_ctc=3.734, loss=3.734, backward_time=0.112, optim_step_time=0.044, optim0_lr0=3.376e-04, train_time=0.319
+[alab02] 2024-08-03 18:33:09,024 (trainer:720) INFO: 40epoch:train:4401-4675batch: iter_time=1.396e-04, forward_time=0.086, uma_reduction=0.201, text_vs_uma=0.512, loss_ctc=3.646, loss=3.646, backward_time=0.108, optim_step_time=0.044, optim0_lr0=3.374e-04, train_time=0.311
+[alab02] 2024-08-03 18:34:35,028 (trainer:720) INFO: 40epoch:train:4676-4950batch: iter_time=1.572e-04, forward_time=0.086, uma_reduction=0.201, text_vs_uma=0.515, loss_ctc=3.694, loss=3.694, backward_time=0.108, optim_step_time=0.044, optim0_lr0=3.372e-04, train_time=0.312
+[alab02] 2024-08-03 18:34:50,612 (trainer:662) WARNING: The grad norm is nan. Skipping updating the model.
+[alab02] 2024-08-03 18:36:00,102 (trainer:720) INFO: 40epoch:train:4951-5225batch: iter_time=1.365e-04, forward_time=0.086, uma_reduction=0.201, text_vs_uma=0.512, loss_ctc=3.715, loss=3.715, backward_time=0.107, optim_step_time=0.043, optim0_lr0=3.370e-04, train_time=0.309
+[alab02] 2024-08-03 18:37:25,026 (trainer:720) INFO: 40epoch:train:5226-5500batch: iter_time=1.397e-04, forward_time=0.084, uma_reduction=0.197, text_vs_uma=0.525, loss_ctc=3.891, loss=3.891, backward_time=0.106, optim_step_time=0.044, optim0_lr0=3.368e-04, train_time=0.309
+[alab02] 2024-08-03 18:38:06,423 (trainer:338) INFO: 40epoch results: [train] iter_time=2.785e-04, forward_time=0.087, uma_reduction=0.202, text_vs_uma=0.512, loss_ctc=3.582, loss=3.582, backward_time=0.109, optim_step_time=0.044, optim0_lr0=3.388e-04, train_time=0.314, time=28 minutes and 55.93 seconds, total_count=220600, gpu_max_cached_mem_GB=19.203, [valid] uma_reduction=0.156, text_vs_uma=0.654, loss_ctc=4.960, cer_ctc=0.064, cer=0.064, loss=4.960, time=26.84 seconds, total_count=8800, gpu_max_cached_mem_GB=24.160, [att_plot] time=9.57 seconds, total_count=0, gpu_max_cached_mem_GB=24.160
+[alab02] 2024-08-03 18:38:09,523 (trainer:384) INFO: There are no improvements in this epoch
+[alab02] 2024-08-03 18:38:09,524 (trainer:272) INFO: 41/50epoch started. Estimated time to finish: 4 hours, 55 minutes and 54.83 seconds
+[alab02] 2024-08-03 18:39:36,263 (trainer:720) INFO: 41epoch:train:1-275batch: iter_time=0.002, forward_time=0.086, uma_reduction=0.195, text_vs_uma=0.530, loss_ctc=3.749, loss=3.749, backward_time=0.109, optim_step_time=0.044, optim0_lr0=3.365e-04, train_time=0.315
+[alab02] 2024-08-03 18:41:02,473 (trainer:720) INFO: 41epoch:train:276-550batch: iter_time=1.479e-04, forward_time=0.085, uma_reduction=0.193, text_vs_uma=0.538, loss_ctc=3.735, loss=3.735, backward_time=0.111, optim_step_time=0.043, optim0_lr0=3.363e-04, train_time=0.313
+[alab02] 2024-08-03 18:42:29,086 (trainer:720) INFO: 41epoch:train:551-825batch: iter_time=1.802e-04, forward_time=0.086, uma_reduction=0.196, text_vs_uma=0.528, loss_ctc=3.821, loss=3.821, backward_time=0.112, optim_step_time=0.042, optim0_lr0=3.361e-04, train_time=0.315
+[alab02] 2024-08-03 18:43:54,016 (trainer:720) INFO: 41epoch:train:826-1100batch: iter_time=1.664e-04, forward_time=0.084, uma_reduction=0.200, text_vs_uma=0.518, loss_ctc=3.725, loss=3.725, backward_time=0.107, optim_step_time=0.042, optim0_lr0=3.359e-04, train_time=0.309
+[alab02] 2024-08-03 18:45:20,611 (trainer:720) INFO: 41epoch:train:1101-1375batch: iter_time=1.986e-04, forward_time=0.086, uma_reduction=0.198, text_vs_uma=0.525, loss_ctc=3.687, loss=3.687, backward_time=0.112, optim_step_time=0.044, optim0_lr0=3.357e-04, train_time=0.315
+[alab02] 2024-08-03 18:46:44,859 (trainer:720) INFO: 41epoch:train:1376-1650batch: iter_time=1.374e-04, forward_time=0.084, uma_reduction=0.200, text_vs_uma=0.517, loss_ctc=3.539, loss=3.539, backward_time=0.107, optim_step_time=0.043, optim0_lr0=3.355e-04, train_time=0.306
+[alab02] 2024-08-03 18:48:10,024 (trainer:720) INFO: 41epoch:train:1651-1925batch: iter_time=1.448e-04, forward_time=0.084, uma_reduction=0.201, text_vs_uma=0.517, loss_ctc=3.562, loss=3.562, backward_time=0.109, optim_step_time=0.042, optim0_lr0=3.353e-04, train_time=0.309
+[alab02] 2024-08-03 18:49:35,985 (trainer:720) INFO: 41epoch:train:1926-2200batch: iter_time=1.581e-04, forward_time=0.085, uma_reduction=0.201, text_vs_uma=0.514, loss_ctc=3.652, loss=3.652, backward_time=0.109, optim_step_time=0.044, optim0_lr0=3.351e-04, train_time=0.312
+[alab02] 2024-08-03 18:51:03,224 (trainer:720) INFO: 41epoch:train:2201-2475batch: iter_time=1.467e-04, forward_time=0.087, uma_reduction=0.203, text_vs_uma=0.508, loss_ctc=3.529, loss=3.529, backward_time=0.111, optim_step_time=0.045, optim0_lr0=3.349e-04, train_time=0.317
+[alab02] 2024-08-03 18:52:30,477 (trainer:720) INFO: 41epoch:train:2476-2750batch: iter_time=1.887e-04, forward_time=0.087, uma_reduction=0.209, text_vs_uma=0.499, loss_ctc=3.354, loss=3.354, backward_time=0.111, optim_step_time=0.046, optim0_lr0=3.347e-04, train_time=0.317
+[alab02] 2024-08-03 18:53:58,586 (trainer:720) INFO: 41epoch:train:2751-3025batch: iter_time=1.586e-04, forward_time=0.089, uma_reduction=0.205, text_vs_uma=0.505, loss_ctc=3.460, loss=3.460, backward_time=0.113, optim_step_time=0.045, optim0_lr0=3.345e-04, train_time=0.320
+[alab02] 2024-08-03 18:55:25,260 (trainer:720) INFO: 41epoch:train:3026-3300batch: iter_time=1.378e-04, forward_time=0.087, uma_reduction=0.203, text_vs_uma=0.508, loss_ctc=3.590, loss=3.590, backward_time=0.109, optim_step_time=0.045, optim0_lr0=3.343e-04, train_time=0.315
+[alab02] 2024-08-03 18:56:53,759 (trainer:720) INFO: 41epoch:train:3301-3575batch: iter_time=1.359e-04, forward_time=0.089, uma_reduction=0.206, text_vs_uma=0.499, loss_ctc=3.656, loss=3.656, backward_time=0.113, optim_step_time=0.047, optim0_lr0=3.341e-04, train_time=0.322
+[alab02] 2024-08-03 18:58:22,718 (trainer:720) INFO: 41epoch:train:3576-3850batch: iter_time=1.417e-04, forward_time=0.091, uma_reduction=0.207, text_vs_uma=0.497, loss_ctc=3.542, loss=3.542, backward_time=0.113, optim_step_time=0.046, optim0_lr0=3.338e-04, train_time=0.323
+[alab02] 2024-08-03 18:59:23,419 (trainer:662) WARNING: The grad norm is nan. Skipping updating the model.
+[alab02] 2024-08-03 18:59:50,728 (trainer:720) INFO: 41epoch:train:3851-4125batch: iter_time=1.665e-04, forward_time=0.089, uma_reduction=0.208, text_vs_uma=0.501, loss_ctc=3.321, loss=3.321, backward_time=0.112, optim_step_time=0.046, optim0_lr0=3.336e-04, train_time=0.320
+[alab02] 2024-08-03 19:01:19,499 (trainer:720) INFO: 41epoch:train:4126-4400batch: iter_time=1.441e-04, forward_time=0.089, uma_reduction=0.208, text_vs_uma=0.497, loss_ctc=3.411, loss=3.411, backward_time=0.114, optim_step_time=0.046, optim0_lr0=3.334e-04, train_time=0.323
+[alab02] 2024-08-03 19:02:48,356 (trainer:720) INFO: 41epoch:train:4401-4675batch: iter_time=1.420e-04, forward_time=0.090, uma_reduction=0.211, text_vs_uma=0.491, loss_ctc=3.400, loss=3.400, backward_time=0.114, optim_step_time=0.046, optim0_lr0=3.332e-04, train_time=0.323
+[alab02] 2024-08-03 19:04:16,692 (trainer:720) INFO: 41epoch:train:4676-4950batch: iter_time=1.817e-04, forward_time=0.090, uma_reduction=0.210, text_vs_uma=0.493, loss_ctc=3.477, loss=3.477, backward_time=0.110, optim_step_time=0.047, optim0_lr0=3.330e-04, train_time=0.321
+[alab02] 2024-08-03 19:05:44,588 (trainer:720) INFO: 41epoch:train:4951-5225batch: iter_time=1.495e-04, forward_time=0.089, uma_reduction=0.208, text_vs_uma=0.495, loss_ctc=3.680, loss=3.680, backward_time=0.110, optim_step_time=0.046, optim0_lr0=3.328e-04, train_time=0.319
+[alab02] 2024-08-03 19:07:14,286 (trainer:720) INFO: 41epoch:train:5226-5500batch: iter_time=1.564e-04, forward_time=0.090, uma_reduction=0.209, text_vs_uma=0.493, loss_ctc=3.546, loss=3.546, backward_time=0.114, optim_step_time=0.046, optim0_lr0=3.326e-04, train_time=0.326
+[alab02] 2024-08-03 19:07:55,762 (trainer:338) INFO: 41epoch results: [train] iter_time=2.572e-04, forward_time=0.087, uma_reduction=0.204, text_vs_uma=0.509, loss_ctc=3.569, loss=3.569, backward_time=0.111, optim_step_time=0.045, optim0_lr0=3.346e-04, train_time=0.317, time=29 minutes and 9.95 seconds, total_count=226115, gpu_max_cached_mem_GB=24.160, [valid] uma_reduction=0.168, text_vs_uma=0.607, loss_ctc=4.670, cer_ctc=0.062, cer=0.062, loss=4.670, time=26.51 seconds, total_count=9020, gpu_max_cached_mem_GB=24.160, [att_plot] time=9.78 seconds, total_count=0, gpu_max_cached_mem_GB=24.160
+[alab02] 2024-08-03 19:07:59,443 (trainer:386) INFO: The best model has been updated: valid.cer
+[alab02] 2024-08-03 19:07:59,507 (trainer:440) INFO: The model files were removed: exp_uma_mamba_0617/asr_train_asr_uma_mamba_raw_zh_char_sp/29epoch.pth, exp_uma_mamba_0617/asr_train_asr_uma_mamba_raw_zh_char_sp/40epoch.pth
+[alab02] 2024-08-03 19:07:59,508 (trainer:272) INFO: 42/50epoch started. Estimated time to finish: 4 hours, 27 minutes and 24.6 seconds
+[alab02] 2024-08-03 19:09:28,840 (trainer:720) INFO: 42epoch:train:1-275batch: iter_time=0.003, forward_time=0.090, uma_reduction=0.207, text_vs_uma=0.497, loss_ctc=3.542, loss=3.542, backward_time=0.110, optim_step_time=0.047, optim0_lr0=3.324e-04, train_time=0.325
+[alab02] 2024-08-03 19:10:59,288 (trainer:720) INFO: 42epoch:train:276-550batch: iter_time=1.651e-04, forward_time=0.091, uma_reduction=0.203, text_vs_uma=0.509, loss_ctc=3.614, loss=3.614, backward_time=0.114, optim_step_time=0.047, optim0_lr0=3.322e-04, train_time=0.329
+[alab02] 2024-08-03 19:12:28,032 (trainer:720) INFO: 42epoch:train:551-825batch: iter_time=1.864e-04, forward_time=0.091, uma_reduction=0.207, text_vs_uma=0.500, loss_ctc=3.408, loss=3.408, backward_time=0.113, optim_step_time=0.046, optim0_lr0=3.320e-04, train_time=0.322
+[alab02] 2024-08-03 19:13:21,857 (trainer:662) WARNING: The grad norm is nan. Skipping updating the model.
+[alab02] 2024-08-03 19:13:57,407 (trainer:720) INFO: 42epoch:train:826-1100batch: iter_time=1.565e-04, forward_time=0.090, uma_reduction=0.201, text_vs_uma=0.512, loss_ctc=3.689, loss=3.689, backward_time=0.113, optim_step_time=0.047, optim0_lr0=3.318e-04, train_time=0.325
+[alab02] 2024-08-03 19:15:25,463 (trainer:720) INFO: 42epoch:train:1101-1375batch: iter_time=1.600e-04, forward_time=0.089, uma_reduction=0.204, text_vs_uma=0.504, loss_ctc=3.665, loss=3.665, backward_time=0.111, optim_step_time=0.045, optim0_lr0=3.316e-04, train_time=0.320
+[alab02] 2024-08-03 19:16:52,660 (trainer:720) INFO: 42epoch:train:1376-1650batch: iter_time=1.454e-04, forward_time=0.088, uma_reduction=0.207, text_vs_uma=0.497, loss_ctc=3.431, loss=3.431, backward_time=0.111, optim_step_time=0.046, optim0_lr0=3.314e-04, train_time=0.317
+[alab02] 2024-08-03 19:18:19,829 (trainer:720) INFO: 42epoch:train:1651-1925batch: iter_time=1.561e-04, forward_time=0.088, uma_reduction=0.206, text_vs_uma=0.502, loss_ctc=3.260, loss=3.260, backward_time=0.110, optim_step_time=0.047, optim0_lr0=3.312e-04, train_time=0.317
+[alab02] 2024-08-03 19:19:49,594 (trainer:720) INFO: 42epoch:train:1926-2200batch: iter_time=1.681e-04, forward_time=0.090, uma_reduction=0.205, text_vs_uma=0.506, loss_ctc=3.481, loss=3.481, backward_time=0.114, optim_step_time=0.047, optim0_lr0=3.310e-04, train_time=0.326
+[alab02] 2024-08-03 19:21:16,772 (trainer:720) INFO: 42epoch:train:2201-2475batch: iter_time=1.646e-04, forward_time=0.087, uma_reduction=0.200, text_vs_uma=0.518, loss_ctc=3.612, loss=3.612, backward_time=0.110, optim_step_time=0.046, optim0_lr0=3.308e-04, train_time=0.317
+[alab02] 2024-08-03 19:22:44,824 (trainer:720) INFO: 42epoch:train:2476-2750batch: iter_time=1.584e-04, forward_time=0.090, uma_reduction=0.198, text_vs_uma=0.523, loss_ctc=3.491, loss=3.491, backward_time=0.111, optim_step_time=0.046, optim0_lr0=3.306e-04, train_time=0.320
+[alab02] 2024-08-03 19:24:13,640 (trainer:720) INFO: 42epoch:train:2751-3025batch: iter_time=2.104e-04, forward_time=0.090, uma_reduction=0.202, text_vs_uma=0.514, loss_ctc=3.533, loss=3.533, backward_time=0.114, optim_step_time=0.046, optim0_lr0=3.304e-04, train_time=0.323
+[alab02] 2024-08-03 19:25:42,217 (trainer:720) INFO: 42epoch:train:3026-3300batch: iter_time=1.923e-04, forward_time=0.089, uma_reduction=0.202, text_vs_uma=0.511, loss_ctc=3.441, loss=3.441, backward_time=0.112, optim_step_time=0.046, optim0_lr0=3.302e-04, train_time=0.322
+[alab02] 2024-08-03 19:25:56,168 (trainer:662) WARNING: The grad norm is nan. Skipping updating the model.
+[alab02] 2024-08-03 19:27:11,651 (trainer:720) INFO: 42epoch:train:3301-3575batch: iter_time=1.489e-04, forward_time=0.091, uma_reduction=0.200, text_vs_uma=0.519, loss_ctc=3.337, loss=3.337, backward_time=0.115, optim_step_time=0.046, optim0_lr0=3.300e-04, train_time=0.325
+[alab02] 2024-08-03 19:28:40,932 (trainer:720) INFO: 42epoch:train:3576-3850batch: iter_time=1.939e-04, forward_time=0.089, uma_reduction=0.200, text_vs_uma=0.521, loss_ctc=3.590, loss=3.590, backward_time=0.113, optim_step_time=0.047, optim0_lr0=3.298e-04, train_time=0.324
+[alab02] 2024-08-03 19:30:09,198 (trainer:720) INFO: 42epoch:train:3851-4125batch: iter_time=1.607e-04, forward_time=0.089, uma_reduction=0.206, text_vs_uma=0.498, loss_ctc=3.552, loss=3.552, backward_time=0.112, optim_step_time=0.047, optim0_lr0=3.296e-04, train_time=0.321
+[alab02] 2024-08-03 19:30:58,599 (trainer:662) WARNING: The grad norm is nan. Skipping updating the model.
+[alab02] 2024-08-03 19:31:37,344 (trainer:720) INFO: 42epoch:train:4126-4400batch: iter_time=1.752e-04, forward_time=0.089, uma_reduction=0.206, text_vs_uma=0.502, loss_ctc=3.615, loss=3.615, backward_time=0.112, optim_step_time=0.046, optim0_lr0=3.294e-04, train_time=0.320
+[alab02] 2024-08-03 19:33:05,203 (trainer:720) INFO: 42epoch:train:4401-4675batch: iter_time=1.651e-04, forward_time=0.088, uma_reduction=0.205, text_vs_uma=0.508, loss_ctc=3.343, loss=3.343, backward_time=0.113, optim_step_time=0.046, optim0_lr0=3.292e-04, train_time=0.319
+[alab02] 2024-08-03 19:34:31,607 (trainer:720) INFO: 42epoch:train:4676-4950batch: iter_time=2.198e-04, forward_time=0.087, uma_reduction=0.200, text_vs_uma=0.518, loss_ctc=3.663, loss=3.663, backward_time=0.108, optim_step_time=0.046, optim0_lr0=3.290e-04, train_time=0.314
+[alab02] 2024-08-03 19:36:00,453 (trainer:720) INFO: 42epoch:train:4951-5225batch: iter_time=1.403e-04, forward_time=0.089, uma_reduction=0.203, text_vs_uma=0.511, loss_ctc=3.511, loss=3.511, backward_time=0.114, optim_step_time=0.046, optim0_lr0=3.288e-04, train_time=0.323
+[alab02] 2024-08-03 19:37:29,952 (trainer:720) INFO: 42epoch:train:5226-5500batch: iter_time=1.419e-04, forward_time=0.091, uma_reduction=0.208, text_vs_uma=0.501, loss_ctc=3.372, loss=3.372, backward_time=0.114, optim_step_time=0.046, optim0_lr0=3.286e-04, train_time=0.325
+[alab02] 2024-08-03 19:38:11,918 (trainer:338) INFO: 42epoch results: [train] iter_time=2.894e-04, forward_time=0.089, uma_reduction=0.203, text_vs_uma=0.509, loss_ctc=3.505, loss=3.505, backward_time=0.112, optim_step_time=0.046, optim0_lr0=3.305e-04, train_time=0.322, time=29 minutes and 35.84 seconds, total_count=231630, gpu_max_cached_mem_GB=24.160, [valid] uma_reduction=0.164, text_vs_uma=0.620, loss_ctc=4.839, cer_ctc=0.063, cer=0.063, loss=4.839, time=26.61 seconds, total_count=9240, gpu_max_cached_mem_GB=24.160, [att_plot] time=9.95 seconds, total_count=0, gpu_max_cached_mem_GB=24.160
+[alab02] 2024-08-03 19:38:15,611 (trainer:384) INFO: There are no improvements in this epoch
+[alab02] 2024-08-03 19:38:15,644 (trainer:440) INFO: The model files were removed: exp_uma_mamba_0617/asr_train_asr_uma_mamba_raw_zh_char_sp/36epoch.pth
+[alab02] 2024-08-03 19:38:15,645 (trainer:272) INFO: 43/50epoch started. Estimated time to finish: 3 hours, 59 minutes and 10.94 seconds
+[alab02] 2024-08-03 19:39:44,251 (trainer:720) INFO: 43epoch:train:1-275batch: iter_time=0.002, forward_time=0.088, uma_reduction=0.207, text_vs_uma=0.501, loss_ctc=3.293, loss=3.293, backward_time=0.111, optim_step_time=0.045, optim0_lr0=3.284e-04, train_time=0.322
+[alab02] 2024-08-03 19:41:11,833 (trainer:720) INFO: 43epoch:train:276-550batch: iter_time=2.333e-04, forward_time=0.088, uma_reduction=0.202, text_vs_uma=0.512, loss_ctc=3.437, loss=3.437, backward_time=0.111, optim_step_time=0.046, optim0_lr0=3.282e-04, train_time=0.318
+[alab02] 2024-08-03 19:42:40,838 (trainer:720) INFO: 43epoch:train:551-825batch: iter_time=1.473e-04, forward_time=0.088, uma_reduction=0.198, text_vs_uma=0.523, loss_ctc=3.759, loss=3.759, backward_time=0.114, optim_step_time=0.046, optim0_lr0=3.280e-04, train_time=0.323
+[alab02] 2024-08-03 19:44:08,216 (trainer:720) INFO: 43epoch:train:826-1100batch: iter_time=1.916e-04, forward_time=0.087, uma_reduction=0.195, text_vs_uma=0.531, loss_ctc=3.469, loss=3.469, backward_time=0.111, optim_step_time=0.045, optim0_lr0=3.279e-04, train_time=0.317
+[alab02] 2024-08-03 19:45:35,516 (trainer:720) INFO: 43epoch:train:1101-1375batch: iter_time=1.939e-04, forward_time=0.087, uma_reduction=0.196, text_vs_uma=0.531, loss_ctc=3.567, loss=3.567, backward_time=0.111, optim_step_time=0.046, optim0_lr0=3.277e-04, train_time=0.317
+[alab02] 2024-08-03 19:47:04,201 (trainer:720) INFO: 43epoch:train:1376-1650batch: iter_time=1.645e-04, forward_time=0.089, uma_reduction=0.198, text_vs_uma=0.520, loss_ctc=3.578, loss=3.578, backward_time=0.112, optim_step_time=0.046, optim0_lr0=3.275e-04, train_time=0.322
+[alab02] 2024-08-03 19:48:29,756 (trainer:720) INFO: 43epoch:train:1651-1925batch: iter_time=1.786e-04, forward_time=0.084, uma_reduction=0.197, text_vs_uma=0.527, loss_ctc=3.395, loss=3.395, backward_time=0.110, optim_step_time=0.045, optim0_lr0=3.273e-04, train_time=0.311
+[alab02] 2024-08-03 19:49:56,029 (trainer:720) INFO: 43epoch:train:1926-2200batch: iter_time=2.534e-04, forward_time=0.085, uma_reduction=0.198, text_vs_uma=0.521, loss_ctc=3.674, loss=3.674, backward_time=0.110, optim_step_time=0.044, optim0_lr0=3.271e-04, train_time=0.313
+[alab02] 2024-08-03 19:51:22,195 (trainer:720) INFO: 43epoch:train:2201-2475batch: iter_time=1.583e-04, forward_time=0.086, uma_reduction=0.203, text_vs_uma=0.508, loss_ctc=3.456, loss=3.456, backward_time=0.110, optim_step_time=0.043, optim0_lr0=3.269e-04, train_time=0.313
+[alab02] 2024-08-03 19:52:47,120 (trainer:720) INFO: 43epoch:train:2476-2750batch: iter_time=1.712e-04, forward_time=0.083, uma_reduction=0.204, text_vs_uma=0.511, loss_ctc=3.271, loss=3.271, backward_time=0.108, optim_step_time=0.044, optim0_lr0=3.267e-04, train_time=0.309
+[alab02] 2024-08-03 19:52:51,928 (trainer:662) WARNING: The grad norm is nan. Skipping updating the model.
+[alab02] 2024-08-03 19:53:09,548 (trainer:662) WARNING: The grad norm is nan. Skipping updating the model.
+[alab02] 2024-08-03 19:54:11,262 (trainer:720) INFO: 43epoch:train:2751-3025batch: iter_time=2.044e-04, forward_time=0.082, uma_reduction=0.204, text_vs_uma=0.508, loss_ctc=3.338, loss=3.338, backward_time=0.108, optim_step_time=0.042, optim0_lr0=3.265e-04, train_time=0.306
+[alab02] 2024-08-03 19:55:38,312 (trainer:720) INFO: 43epoch:train:3026-3300batch: iter_time=1.947e-04, forward_time=0.087, uma_reduction=0.199, text_vs_uma=0.520, loss_ctc=3.540, loss=3.540, backward_time=0.112, optim_step_time=0.043, optim0_lr0=3.263e-04, train_time=0.316
+[alab02] 2024-08-03 19:57:04,944 (trainer:720) INFO: 43epoch:train:3301-3575batch: iter_time=1.789e-04, forward_time=0.085, uma_reduction=0.202, text_vs_uma=0.509, loss_ctc=3.713, loss=3.713, backward_time=0.110, optim_step_time=0.045, optim0_lr0=3.261e-04, train_time=0.315
+[alab02] 2024-08-03 19:58:31,332 (trainer:720) INFO: 43epoch:train:3576-3850batch: iter_time=1.802e-04, forward_time=0.085, uma_reduction=0.198, text_vs_uma=0.518, loss_ctc=3.595, loss=3.595, backward_time=0.110, optim_step_time=0.045, optim0_lr0=3.259e-04, train_time=0.314
+[alab02] 2024-08-03 19:59:58,601 (trainer:720) INFO: 43epoch:train:3851-4125batch: iter_time=1.826e-04, forward_time=0.087, uma_reduction=0.201, text_vs_uma=0.515, loss_ctc=3.561, loss=3.561, backward_time=0.111, optim_step_time=0.045, optim0_lr0=3.257e-04, train_time=0.317
+[alab02] 2024-08-03 20:01:27,121 (trainer:720) INFO: 43epoch:train:4126-4400batch: iter_time=1.770e-04, forward_time=0.089, uma_reduction=0.202, text_vs_uma=0.511, loss_ctc=3.588, loss=3.588, backward_time=0.112, optim_step_time=0.046, optim0_lr0=3.256e-04, train_time=0.322
+[alab02] 2024-08-03 20:02:53,838 (trainer:720) INFO: 43epoch:train:4401-4675batch: iter_time=1.327e-04, forward_time=0.086, uma_reduction=0.203, text_vs_uma=0.514, loss_ctc=3.459, loss=3.459, backward_time=0.111, optim_step_time=0.045, optim0_lr0=3.254e-04, train_time=0.315
+[alab02] 2024-08-03 20:04:21,370 (trainer:720) INFO: 43epoch:train:4676-4950batch: iter_time=1.638e-04, forward_time=0.087, uma_reduction=0.200, text_vs_uma=0.517, loss_ctc=3.500, loss=3.500, backward_time=0.111, optim_step_time=0.047, optim0_lr0=3.252e-04, train_time=0.318
+[alab02] 2024-08-03 20:05:49,680 (trainer:720) INFO: 43epoch:train:4951-5225batch: iter_time=1.406e-04, forward_time=0.088, uma_reduction=0.199, text_vs_uma=0.521, loss_ctc=3.490, loss=3.490, backward_time=0.113, optim_step_time=0.046, optim0_lr0=3.250e-04, train_time=0.321
+[alab02] 2024-08-03 20:07:14,102 (trainer:720) INFO: 43epoch:train:5226-5500batch: iter_time=1.687e-04, forward_time=0.083, uma_reduction=0.204, text_vs_uma=0.506, loss_ctc=3.434, loss=3.434, backward_time=0.107, optim_step_time=0.043, optim0_lr0=3.248e-04, train_time=0.307
+[alab02] 2024-08-03 20:07:55,070 (trainer:338) INFO: 43epoch results: [train] iter_time=2.838e-04, forward_time=0.086, uma_reduction=0.200, text_vs_uma=0.516, loss_ctc=3.505, loss=3.505, backward_time=0.111, optim_step_time=0.045, optim0_lr0=3.266e-04, train_time=0.316, time=29 minutes and 3.1 seconds, total_count=237145, gpu_max_cached_mem_GB=24.160, [valid] uma_reduction=0.161, text_vs_uma=0.631, loss_ctc=4.795, cer_ctc=0.064, cer=0.064, loss=4.795, time=25.6 seconds, total_count=9460, gpu_max_cached_mem_GB=24.160, [att_plot] time=10.72 seconds, total_count=0, gpu_max_cached_mem_GB=24.160
+[alab02] 2024-08-03 20:07:58,336 (trainer:384) INFO: There are no improvements in this epoch
+[alab02] 2024-08-03 20:07:58,337 (trainer:272) INFO: 44/50epoch started. Estimated time to finish: 3 hours, 28 minutes and 57.52 seconds
+[alab02] 2024-08-03 20:09:25,829 (trainer:720) INFO: 44epoch:train:1-275batch: iter_time=0.002, forward_time=0.087, uma_reduction=0.203, text_vs_uma=0.508, loss_ctc=3.478, loss=3.478, backward_time=0.111, optim_step_time=0.043, optim0_lr0=3.246e-04, train_time=0.318
+[alab02] 2024-08-03 20:10:13,757 (trainer:662) WARNING: The grad norm is nan. Skipping updating the model.
+[alab02] 2024-08-03 20:10:52,952 (trainer:720) INFO: 44epoch:train:276-550batch: iter_time=1.593e-04, forward_time=0.086, uma_reduction=0.204, text_vs_uma=0.506, loss_ctc=3.192, loss=3.192, backward_time=0.113, optim_step_time=0.043, optim0_lr0=3.244e-04, train_time=0.317
+[alab02] 2024-08-03 20:12:20,222 (trainer:720) INFO: 44epoch:train:551-825batch: iter_time=2.040e-04, forward_time=0.087, uma_reduction=0.204, text_vs_uma=0.509, loss_ctc=3.214, loss=3.214, backward_time=0.113, optim_step_time=0.044, optim0_lr0=3.242e-04, train_time=0.317
+[alab02] 2024-08-03 20:13:45,618 (trainer:720) INFO: 44epoch:train:826-1100batch: iter_time=1.443e-04, forward_time=0.085, uma_reduction=0.204, text_vs_uma=0.510, loss_ctc=3.337, loss=3.337, backward_time=0.108, optim_step_time=0.044, optim0_lr0=3.240e-04, train_time=0.310
+[alab02] 2024-08-03 20:15:12,979 (trainer:720) INFO: 44epoch:train:1101-1375batch: iter_time=2.038e-04, forward_time=0.087, uma_reduction=0.206, text_vs_uma=0.501, loss_ctc=3.489, loss=3.489, backward_time=0.111, optim_step_time=0.046, optim0_lr0=3.239e-04, train_time=0.317
+[alab02] 2024-08-03 20:16:40,068 (trainer:720) INFO: 44epoch:train:1376-1650batch: iter_time=1.764e-04, forward_time=0.088, uma_reduction=0.208, text_vs_uma=0.499, loss_ctc=3.395, loss=3.395, backward_time=0.108, optim_step_time=0.047, optim0_lr0=3.237e-04, train_time=0.316
+[alab02] 2024-08-03 20:18:07,784 (trainer:720) INFO: 44epoch:train:1651-1925batch: iter_time=1.569e-04, forward_time=0.088, uma_reduction=0.206, text_vs_uma=0.500, loss_ctc=3.412, loss=3.412, backward_time=0.111, optim_step_time=0.045, optim0_lr0=3.235e-04, train_time=0.319
+[alab02] 2024-08-03 20:19:34,414 (trainer:720) INFO: 44epoch:train:1926-2200batch: iter_time=1.369e-04, forward_time=0.087, uma_reduction=0.205, text_vs_uma=0.505, loss_ctc=3.401, loss=3.401, backward_time=0.110, optim_step_time=0.044, optim0_lr0=3.233e-04, train_time=0.315
+[alab02] 2024-08-03 20:21:02,650 (trainer:720) INFO: 44epoch:train:2201-2475batch: iter_time=1.322e-04, forward_time=0.088, uma_reduction=0.206, text_vs_uma=0.503, loss_ctc=3.344, loss=3.344, backward_time=0.114, optim_step_time=0.045, optim0_lr0=3.231e-04, train_time=0.321
+[alab02] 2024-08-03 20:22:29,145 (trainer:720) INFO: 44epoch:train:2476-2750batch: iter_time=1.739e-04, forward_time=0.086, uma_reduction=0.204, text_vs_uma=0.509, loss_ctc=3.361, loss=3.361, backward_time=0.109, optim_step_time=0.046, optim0_lr0=3.229e-04, train_time=0.314
+[alab02] 2024-08-03 20:23:58,224 (trainer:720) INFO: 44epoch:train:2751-3025batch: iter_time=1.721e-04, forward_time=0.090, uma_reduction=0.203, text_vs_uma=0.511, loss_ctc=3.198, loss=3.198, backward_time=0.114, optim_step_time=0.046, optim0_lr0=3.227e-04, train_time=0.324
+[alab02] 2024-08-03 20:25:24,819 (trainer:720) INFO: 44epoch:train:3026-3300batch: iter_time=1.318e-04, forward_time=0.086, uma_reduction=0.199, text_vs_uma=0.516, loss_ctc=3.539, loss=3.539, backward_time=0.109, optim_step_time=0.045, optim0_lr0=3.226e-04, train_time=0.315
+[alab02] 2024-08-03 20:26:52,460 (trainer:720) INFO: 44epoch:train:3301-3575batch: iter_time=1.385e-04, forward_time=0.088, uma_reduction=0.196, text_vs_uma=0.530, loss_ctc=3.363, loss=3.363, backward_time=0.113, optim_step_time=0.046, optim0_lr0=3.224e-04, train_time=0.318
+[alab02] 2024-08-03 20:28:22,450 (trainer:720) INFO: 44epoch:train:3576-3850batch: iter_time=1.367e-04, forward_time=0.091, uma_reduction=0.204, text_vs_uma=0.508, loss_ctc=3.299, loss=3.299, backward_time=0.116, optim_step_time=0.046, optim0_lr0=3.222e-04, train_time=0.327
+[alab02] 2024-08-03 20:29:49,415 (trainer:720) INFO: 44epoch:train:3851-4125batch: iter_time=2.225e-04, forward_time=0.087, uma_reduction=0.210, text_vs_uma=0.493, loss_ctc=3.428, loss=3.428, backward_time=0.109, optim_step_time=0.047, optim0_lr0=3.220e-04, train_time=0.316
+[alab02] 2024-08-03 20:29:55,464 (trainer:662) WARNING: The grad norm is nan. Skipping updating the model.
+[alab02] 2024-08-03 20:31:16,745 (trainer:720) INFO: 44epoch:train:4126-4400batch: iter_time=1.402e-04, forward_time=0.087, uma_reduction=0.210, text_vs_uma=0.492, loss_ctc=3.410, loss=3.410, backward_time=0.111, optim_step_time=0.046, optim0_lr0=3.218e-04, train_time=0.317
+[alab02] 2024-08-03 20:32:44,517 (trainer:720) INFO: 44epoch:train:4401-4675batch: iter_time=1.345e-04, forward_time=0.088, uma_reduction=0.204, text_vs_uma=0.506, loss_ctc=3.489, loss=3.489, backward_time=0.111, optim_step_time=0.046, optim0_lr0=3.216e-04, train_time=0.319
+[alab02] 2024-08-03 20:34:12,494 (trainer:720) INFO: 44epoch:train:4676-4950batch: iter_time=1.422e-04, forward_time=0.088, uma_reduction=0.201, text_vs_uma=0.515, loss_ctc=3.558, loss=3.558, backward_time=0.111, optim_step_time=0.046, optim0_lr0=3.214e-04, train_time=0.320
+[alab02] 2024-08-03 20:35:40,211 (trainer:720) INFO: 44epoch:train:4951-5225batch: iter_time=1.606e-04, forward_time=0.088, uma_reduction=0.204, text_vs_uma=0.506, loss_ctc=3.683, loss=3.683, backward_time=0.109, optim_step_time=0.047, optim0_lr0=3.213e-04, train_time=0.319
+[alab02] 2024-08-03 20:37:06,364 (trainer:720) INFO: 44epoch:train:5226-5500batch: iter_time=1.442e-04, forward_time=0.086, uma_reduction=0.205, text_vs_uma=0.505, loss_ctc=3.351, loss=3.351, backward_time=0.108, optim_step_time=0.045, optim0_lr0=3.211e-04, train_time=0.313
+[alab02] 2024-08-03 20:37:46,620 (trainer:338) INFO: 44epoch results: [train] iter_time=2.441e-04, forward_time=0.087, uma_reduction=0.204, text_vs_uma=0.507, loss_ctc=3.395, loss=3.395, backward_time=0.111, optim_step_time=0.045, optim0_lr0=3.228e-04, train_time=0.318, time=29 minutes and 13.05 seconds, total_count=242660, gpu_max_cached_mem_GB=24.160, [valid] uma_reduction=0.159, text_vs_uma=0.639, loss_ctc=4.867, cer_ctc=0.062, cer=0.062, loss=4.867, time=25.98 seconds, total_count=9680, gpu_max_cached_mem_GB=24.160, [att_plot] time=9.25 seconds, total_count=0, gpu_max_cached_mem_GB=24.160
+[alab02] 2024-08-03 20:37:50,123 (trainer:384) INFO: There are no improvements in this epoch
+[alab02] 2024-08-03 20:37:50,194 (trainer:440) INFO: The model files were removed: exp_uma_mamba_0617/asr_train_asr_uma_mamba_raw_zh_char_sp/37epoch.pth, exp_uma_mamba_0617/asr_train_asr_uma_mamba_raw_zh_char_sp/43epoch.pth
+[alab02] 2024-08-03 20:37:50,194 (trainer:272) INFO: 45/50epoch started. Estimated time to finish: 2 hours, 59 minutes and 7.38 seconds
+[alab02] 2024-08-03 20:39:18,872 (trainer:720) INFO: 45epoch:train:1-275batch: iter_time=0.002, forward_time=0.088, uma_reduction=0.203, text_vs_uma=0.513, loss_ctc=3.447, loss=3.447, backward_time=0.112, optim_step_time=0.045, optim0_lr0=3.209e-04, train_time=0.322
+[alab02] 2024-08-03 20:40:47,491 (trainer:720) INFO: 45epoch:train:276-550batch: iter_time=1.509e-04, forward_time=0.089, uma_reduction=0.194, text_vs_uma=0.532, loss_ctc=3.638, loss=3.638, backward_time=0.113, optim_step_time=0.045, optim0_lr0=3.207e-04, train_time=0.322
+[alab02] 2024-08-03 20:41:15,386 (trainer:662) WARNING: The grad norm is nan. Skipping updating the model.
+[alab02] 2024-08-03 20:42:16,569 (trainer:720) INFO: 45epoch:train:551-825batch: iter_time=1.678e-04, forward_time=0.090, uma_reduction=0.195, text_vs_uma=0.530, loss_ctc=3.490, loss=3.490, backward_time=0.113, optim_step_time=0.047, optim0_lr0=3.205e-04, train_time=0.324
+[alab02] 2024-08-03 20:43:44,074 (trainer:720) INFO: 45epoch:train:826-1100batch: iter_time=1.901e-04, forward_time=0.087, uma_reduction=0.200, text_vs_uma=0.516, loss_ctc=3.314, loss=3.314, backward_time=0.111, optim_step_time=0.047, optim0_lr0=3.203e-04, train_time=0.318
+[alab02] 2024-08-03 20:45:12,419 (trainer:720) INFO: 45epoch:train:1101-1375batch: iter_time=2.298e-04, forward_time=0.089, uma_reduction=0.201, text_vs_uma=0.514, loss_ctc=3.272, loss=3.272, backward_time=0.112, optim_step_time=0.047, optim0_lr0=3.202e-04, train_time=0.321
+[alab02] 2024-08-03 20:46:41,092 (trainer:720) INFO: 45epoch:train:1376-1650batch: iter_time=1.882e-04, forward_time=0.089, uma_reduction=0.199, text_vs_uma=0.521, loss_ctc=3.552, loss=3.552, backward_time=0.112, optim_step_time=0.047, optim0_lr0=3.200e-04, train_time=0.322
+[alab02] 2024-08-03 20:48:10,465 (trainer:720) INFO: 45epoch:train:1651-1925batch: iter_time=1.529e-04, forward_time=0.091, uma_reduction=0.197, text_vs_uma=0.526, loss_ctc=3.472, loss=3.472, backward_time=0.113, optim_step_time=0.047, optim0_lr0=3.198e-04, train_time=0.325
+[alab02] 2024-08-03 20:48:55,997 (trainer:662) WARNING: The grad norm is nan. Skipping updating the model.
+[alab02] 2024-08-03 20:49:37,989 (trainer:720) INFO: 45epoch:train:1926-2200batch: iter_time=1.876e-04, forward_time=0.088, uma_reduction=0.197, text_vs_uma=0.523, loss_ctc=3.491, loss=3.491, backward_time=0.110, optim_step_time=0.047, optim0_lr0=3.196e-04, train_time=0.318
+[alab02] 2024-08-03 20:51:07,039 (trainer:720) INFO: 45epoch:train:2201-2475batch: iter_time=1.611e-04, forward_time=0.090, uma_reduction=0.197, text_vs_uma=0.524, loss_ctc=3.587, loss=3.587, backward_time=0.113, optim_step_time=0.047, optim0_lr0=3.195e-04, train_time=0.324
+[alab02] 2024-08-03 20:52:35,325 (trainer:720) INFO: 45epoch:train:2476-2750batch: iter_time=2.053e-04, forward_time=0.090, uma_reduction=0.200, text_vs_uma=0.519, loss_ctc=3.454, loss=3.454, backward_time=0.110, optim_step_time=0.048, optim0_lr0=3.193e-04, train_time=0.321
+[alab02] 2024-08-03 20:54:02,637 (trainer:720) INFO: 45epoch:train:2751-3025batch: iter_time=1.447e-04, forward_time=0.088, uma_reduction=0.201, text_vs_uma=0.517, loss_ctc=3.321, loss=3.321, backward_time=0.111, optim_step_time=0.046, optim0_lr0=3.191e-04, train_time=0.317
+[alab02] 2024-08-03 20:55:30,743 (trainer:720) INFO: 45epoch:train:3026-3300batch: iter_time=1.303e-04, forward_time=0.088, uma_reduction=0.200, text_vs_uma=0.514, loss_ctc=3.675, loss=3.675, backward_time=0.112, optim_step_time=0.045, optim0_lr0=3.189e-04, train_time=0.320
+[alab02] 2024-08-03 20:56:59,064 (trainer:720) INFO: 45epoch:train:3301-3575batch: iter_time=1.499e-04, forward_time=0.089, uma_reduction=0.201, text_vs_uma=0.514, loss_ctc=3.406, loss=3.406, backward_time=0.112, optim_step_time=0.047, optim0_lr0=3.187e-04, train_time=0.321
+[alab02] 2024-08-03 20:58:28,387 (trainer:720) INFO: 45epoch:train:3576-3850batch: iter_time=1.603e-04, forward_time=0.090, uma_reduction=0.199, text_vs_uma=0.523, loss_ctc=3.312, loss=3.312, backward_time=0.114, optim_step_time=0.048, optim0_lr0=3.186e-04, train_time=0.325
+[alab02] 2024-08-03 20:59:59,523 (trainer:720) INFO: 45epoch:train:3851-4125batch: iter_time=1.812e-04, forward_time=0.092, uma_reduction=0.197, text_vs_uma=0.523, loss_ctc=3.675, loss=3.675, backward_time=0.115, optim_step_time=0.049, optim0_lr0=3.184e-04, train_time=0.331
+[alab02] 2024-08-03 21:01:30,065 (trainer:720) INFO: 45epoch:train:4126-4400batch: iter_time=1.853e-04, forward_time=0.092, uma_reduction=0.200, text_vs_uma=0.515, loss_ctc=3.426, loss=3.426, backward_time=0.114, optim_step_time=0.048, optim0_lr0=3.182e-04, train_time=0.329
+[alab02] 2024-08-03 21:02:58,678 (trainer:720) INFO: 45epoch:train:4401-4675batch: iter_time=1.617e-04, forward_time=0.090, uma_reduction=0.203, text_vs_uma=0.508, loss_ctc=3.500, loss=3.500, backward_time=0.112, optim_step_time=0.048, optim0_lr0=3.180e-04, train_time=0.322
+[alab02] 2024-08-03 21:04:28,179 (trainer:720) INFO: 45epoch:train:4676-4950batch: iter_time=1.633e-04, forward_time=0.092, uma_reduction=0.205, text_vs_uma=0.506, loss_ctc=3.297, loss=3.297, backward_time=0.113, optim_step_time=0.048, optim0_lr0=3.178e-04, train_time=0.325
+[alab02] 2024-08-03 21:05:57,037 (trainer:720) INFO: 45epoch:train:4951-5225batch: iter_time=1.829e-04, forward_time=0.090, uma_reduction=0.210, text_vs_uma=0.494, loss_ctc=3.279, loss=3.279, backward_time=0.112, optim_step_time=0.047, optim0_lr0=3.177e-04, train_time=0.323
+[alab02] 2024-08-03 21:07:26,757 (trainer:720) INFO: 45epoch:train:5226-5500batch: iter_time=1.510e-04, forward_time=0.091, uma_reduction=0.210, text_vs_uma=0.493, loss_ctc=3.343, loss=3.343, backward_time=0.113, optim_step_time=0.048, optim0_lr0=3.175e-04, train_time=0.326
+[alab02] 2024-08-03 21:08:08,138 (trainer:338) INFO: 45epoch results: [train] iter_time=2.480e-04, forward_time=0.090, uma_reduction=0.201, text_vs_uma=0.516, loss_ctc=3.446, loss=3.446, backward_time=0.112, optim_step_time=0.047, optim0_lr0=3.192e-04, train_time=0.323, time=29 minutes and 41.49 seconds, total_count=248175, gpu_max_cached_mem_GB=24.160, [valid] uma_reduction=0.173, text_vs_uma=0.587, loss_ctc=4.705, cer_ctc=0.062, cer=0.062, loss=4.705, time=26.71 seconds, total_count=9900, gpu_max_cached_mem_GB=24.160, [att_plot] time=9.74 seconds, total_count=0, gpu_max_cached_mem_GB=24.160
+[alab02] 2024-08-03 21:08:11,717 (trainer:384) INFO: There are no improvements in this epoch
+[alab02] 2024-08-03 21:08:11,747 (trainer:440) INFO: The model files were removed: exp_uma_mamba_0617/asr_train_asr_uma_mamba_raw_zh_char_sp/27epoch.pth
+[alab02] 2024-08-03 21:08:11,747 (trainer:272) INFO: 46/50epoch started. Estimated time to finish: 2 hours, 29 minutes and 41.42 seconds
+[alab02] 2024-08-03 21:09:41,413 (trainer:720) INFO: 46epoch:train:1-275batch: iter_time=0.002, forward_time=0.089, uma_reduction=0.204, text_vs_uma=0.506, loss_ctc=3.201, loss=3.201, backward_time=0.112, optim_step_time=0.047, optim0_lr0=3.173e-04, train_time=0.326
+[alab02] 2024-08-03 21:11:09,162 (trainer:720) INFO: 46epoch:train:276-550batch: iter_time=2.029e-04, forward_time=0.087, uma_reduction=0.204, text_vs_uma=0.509, loss_ctc=3.386, loss=3.386, backward_time=0.110, optim_step_time=0.047, optim0_lr0=3.171e-04, train_time=0.319
+[alab02] 2024-08-03 21:12:37,260 (trainer:720) INFO: 46epoch:train:551-825batch: iter_time=1.613e-04, forward_time=0.088, uma_reduction=0.202, text_vs_uma=0.512, loss_ctc=3.321, loss=3.321, backward_time=0.111, optim_step_time=0.047, optim0_lr0=3.170e-04, train_time=0.320
+[alab02] 2024-08-03 21:14:04,997 (trainer:720) INFO: 46epoch:train:826-1100batch: iter_time=1.618e-04, forward_time=0.088, uma_reduction=0.199, text_vs_uma=0.523, loss_ctc=3.088, loss=3.088, backward_time=0.113, optim_step_time=0.047, optim0_lr0=3.168e-04, train_time=0.319
+[alab02] 2024-08-03 21:15:32,294 (trainer:720) INFO: 46epoch:train:1101-1375batch: iter_time=1.832e-04, forward_time=0.087, uma_reduction=0.196, text_vs_uma=0.527, loss_ctc=3.719, loss=3.719, backward_time=0.109, optim_step_time=0.046, optim0_lr0=3.166e-04, train_time=0.317
+[alab02] 2024-08-03 21:16:59,081 (trainer:720) INFO: 46epoch:train:1376-1650batch: iter_time=1.535e-04, forward_time=0.087, uma_reduction=0.193, text_vs_uma=0.535, loss_ctc=3.551, loss=3.551, backward_time=0.109, optim_step_time=0.046, optim0_lr0=3.164e-04, train_time=0.315
+[alab02] 2024-08-03 21:18:27,499 (trainer:720) INFO: 46epoch:train:1651-1925batch: iter_time=1.750e-04, forward_time=0.089, uma_reduction=0.196, text_vs_uma=0.526, loss_ctc=3.573, loss=3.573, backward_time=0.112, optim_step_time=0.045, optim0_lr0=3.163e-04, train_time=0.321
+[alab02] 2024-08-03 21:19:54,355 (trainer:720) INFO: 46epoch:train:1926-2200batch: iter_time=1.811e-04, forward_time=0.086, uma_reduction=0.198, text_vs_uma=0.523, loss_ctc=3.514, loss=3.514, backward_time=0.112, optim_step_time=0.043, optim0_lr0=3.161e-04, train_time=0.316
+[alab02] 2024-08-03 21:21:20,807 (trainer:720) INFO: 46epoch:train:2201-2475batch: iter_time=2.097e-04, forward_time=0.086, uma_reduction=0.202, text_vs_uma=0.511, loss_ctc=3.230, loss=3.230, backward_time=0.111, optim_step_time=0.044, optim0_lr0=3.159e-04, train_time=0.314
+[alab02] 2024-08-03 21:21:58,971 (trainer:662) WARNING: The grad norm is nan. Skipping updating the model.
+[alab02] 2024-08-03 21:22:45,568 (trainer:720) INFO: 46epoch:train:2476-2750batch: iter_time=1.573e-04, forward_time=0.084, uma_reduction=0.202, text_vs_uma=0.511, loss_ctc=3.198, loss=3.198, backward_time=0.108, optim_step_time=0.044, optim0_lr0=3.157e-04, train_time=0.308
+[alab02] 2024-08-03 21:24:11,134 (trainer:720) INFO: 46epoch:train:2751-3025batch: iter_time=1.256e-04, forward_time=0.085, uma_reduction=0.205, text_vs_uma=0.504, loss_ctc=3.235, loss=3.235, backward_time=0.109, optim_step_time=0.044, optim0_lr0=3.156e-04, train_time=0.311
+[alab02] 2024-08-03 21:25:36,280 (trainer:720) INFO: 46epoch:train:3026-3300batch: iter_time=1.372e-04, forward_time=0.083, uma_reduction=0.200, text_vs_uma=0.515, loss_ctc=3.375, loss=3.375, backward_time=0.108, optim_step_time=0.043, optim0_lr0=3.154e-04, train_time=0.309
+[alab02] 2024-08-03 21:27:02,937 (trainer:720) INFO: 46epoch:train:3301-3575batch: iter_time=2.110e-04, forward_time=0.086, uma_reduction=0.203, text_vs_uma=0.509, loss_ctc=3.441, loss=3.441, backward_time=0.111, optim_step_time=0.043, optim0_lr0=3.152e-04, train_time=0.315
+[alab02] 2024-08-03 21:28:28,793 (trainer:720) INFO: 46epoch:train:3576-3850batch: iter_time=1.454e-04, forward_time=0.085, uma_reduction=0.207, text_vs_uma=0.496, loss_ctc=3.438, loss=3.438, backward_time=0.108, optim_step_time=0.043, optim0_lr0=3.151e-04, train_time=0.312
+[alab02] 2024-08-03 21:29:55,290 (trainer:720) INFO: 46epoch:train:3851-4125batch: iter_time=1.217e-04, forward_time=0.085, uma_reduction=0.207, text_vs_uma=0.498, loss_ctc=3.315, loss=3.315, backward_time=0.112, optim_step_time=0.043, optim0_lr0=3.149e-04, train_time=0.314
+[alab02] 2024-08-03 21:31:20,661 (trainer:720) INFO: 46epoch:train:4126-4400batch: iter_time=1.416e-04, forward_time=0.084, uma_reduction=0.209, text_vs_uma=0.495, loss_ctc=3.178, loss=3.178, backward_time=0.110, optim_step_time=0.043, optim0_lr0=3.147e-04, train_time=0.310
+[alab02] 2024-08-03 21:32:46,811 (trainer:720) INFO: 46epoch:train:4401-4675batch: iter_time=1.725e-04, forward_time=0.085, uma_reduction=0.210, text_vs_uma=0.493, loss_ctc=3.376, loss=3.376, backward_time=0.110, optim_step_time=0.043, optim0_lr0=3.145e-04, train_time=0.313
+[alab02] 2024-08-03 21:34:12,762 (trainer:720) INFO: 46epoch:train:4676-4950batch: iter_time=1.947e-04, forward_time=0.085, uma_reduction=0.203, text_vs_uma=0.514, loss_ctc=3.272, loss=3.272, backward_time=0.110, optim_step_time=0.043, optim0_lr0=3.144e-04, train_time=0.312
+[alab02] 2024-08-03 21:35:38,391 (trainer:720) INFO: 46epoch:train:4951-5225batch: iter_time=1.754e-04, forward_time=0.085, uma_reduction=0.204, text_vs_uma=0.509, loss_ctc=3.193, loss=3.193, backward_time=0.109, optim_step_time=0.045, optim0_lr0=3.142e-04, train_time=0.311
+[alab02] 2024-08-03 21:37:03,150 (trainer:720) INFO: 46epoch:train:5226-5500batch: iter_time=1.336e-04, forward_time=0.084, uma_reduction=0.201, text_vs_uma=0.514, loss_ctc=3.236, loss=3.236, backward_time=0.108, optim_step_time=0.043, optim0_lr0=3.140e-04, train_time=0.308
+[alab02] 2024-08-03 21:37:43,016 (trainer:338) INFO: 46epoch results: [train] iter_time=2.689e-04, forward_time=0.086, uma_reduction=0.202, text_vs_uma=0.512, loss_ctc=3.340, loss=3.340, backward_time=0.110, optim_step_time=0.044, optim0_lr0=3.157e-04, train_time=0.314, time=28 minutes and 56.23 seconds, total_count=253690, gpu_max_cached_mem_GB=24.160, [valid] uma_reduction=0.158, text_vs_uma=0.643, loss_ctc=4.970, cer_ctc=0.063, cer=0.063, loss=4.970, time=26.11 seconds, total_count=10120, gpu_max_cached_mem_GB=24.160, [att_plot] time=8.93 seconds, total_count=0, gpu_max_cached_mem_GB=24.160
+[alab02] 2024-08-03 21:37:46,593 (trainer:384) INFO: There are no improvements in this epoch
+[alab02] 2024-08-03 21:37:46,622 (trainer:440) INFO: The model files were removed: exp_uma_mamba_0617/asr_train_asr_uma_mamba_raw_zh_char_sp/32epoch.pth
+[alab02] 2024-08-03 21:37:46,622 (trainer:272) INFO: 47/50epoch started. Estimated time to finish: 1 hour, 59 minutes and 32.9 seconds
+[alab02] 2024-08-03 21:39:13,960 (trainer:720) INFO: 47epoch:train:1-275batch: iter_time=0.002, forward_time=0.086, uma_reduction=0.200, text_vs_uma=0.518, loss_ctc=3.296, loss=3.296, backward_time=0.111, optim_step_time=0.043, optim0_lr0=3.138e-04, train_time=0.317
+[alab02] 2024-08-03 21:39:37,896 (trainer:662) WARNING: The grad norm is nan. Skipping updating the model.
+[alab02] 2024-08-03 21:40:42,629 (trainer:720) INFO: 47epoch:train:276-550batch: iter_time=1.949e-04, forward_time=0.089, uma_reduction=0.204, text_vs_uma=0.504, loss_ctc=3.355, loss=3.355, backward_time=0.111, optim_step_time=0.048, optim0_lr0=3.137e-04, train_time=0.322
+[alab02] 2024-08-03 21:42:10,875 (trainer:720) INFO: 47epoch:train:551-825batch: iter_time=2.079e-04, forward_time=0.089, uma_reduction=0.211, text_vs_uma=0.489, loss_ctc=3.264, loss=3.264, backward_time=0.110, optim_step_time=0.047, optim0_lr0=3.135e-04, train_time=0.321
+[alab02] 2024-08-03 21:42:17,261 (trainer:662) WARNING: The grad norm is nan. Skipping updating the model.
+[alab02] 2024-08-03 21:43:40,549 (trainer:720) INFO: 47epoch:train:826-1100batch: iter_time=1.605e-04, forward_time=0.090, uma_reduction=0.215, text_vs_uma=0.483, loss_ctc=3.115, loss=3.115, backward_time=0.116, optim_step_time=0.046, optim0_lr0=3.133e-04, train_time=0.326
+[alab02] 2024-08-03 21:45:08,869 (trainer:720) INFO: 47epoch:train:1101-1375batch: iter_time=2.175e-04, forward_time=0.088, uma_reduction=0.208, text_vs_uma=0.496, loss_ctc=3.396, loss=3.396, backward_time=0.112, optim_step_time=0.046, optim0_lr0=3.132e-04, train_time=0.321
+[alab02] 2024-08-03 21:46:37,052 (trainer:720) INFO: 47epoch:train:1376-1650batch: iter_time=1.778e-04, forward_time=0.088, uma_reduction=0.211, text_vs_uma=0.491, loss_ctc=3.272, loss=3.272, backward_time=0.112, optim_step_time=0.046, optim0_lr0=3.130e-04, train_time=0.320
+[alab02] 2024-08-03 21:48:05,163 (trainer:720) INFO: 47epoch:train:1651-1925batch: iter_time=1.497e-04, forward_time=0.088, uma_reduction=0.205, text_vs_uma=0.507, loss_ctc=3.211, loss=3.211, backward_time=0.113, optim_step_time=0.046, optim0_lr0=3.128e-04, train_time=0.320
+[alab02] 2024-08-03 21:49:32,270 (trainer:720) INFO: 47epoch:train:1926-2200batch: iter_time=1.694e-04, forward_time=0.087, uma_reduction=0.202, text_vs_uma=0.511, loss_ctc=3.258, loss=3.258, backward_time=0.110, optim_step_time=0.046, optim0_lr0=3.127e-04, train_time=0.316
+[alab02] 2024-08-03 21:51:01,073 (trainer:720) INFO: 47epoch:train:2201-2475batch: iter_time=1.752e-04, forward_time=0.091, uma_reduction=0.207, text_vs_uma=0.500, loss_ctc=3.243, loss=3.243, backward_time=0.111, optim_step_time=0.049, optim0_lr0=3.125e-04, train_time=0.323
+[alab02] 2024-08-03 21:52:31,373 (trainer:720) INFO: 47epoch:train:2476-2750batch: iter_time=1.931e-04, forward_time=0.091, uma_reduction=0.210, text_vs_uma=0.490, loss_ctc=3.398, loss=3.398, backward_time=0.113, optim_step_time=0.048, optim0_lr0=3.123e-04, train_time=0.328
+[alab02] 2024-08-03 21:54:01,044 (trainer:720) INFO: 47epoch:train:2751-3025batch: iter_time=1.761e-04, forward_time=0.090, uma_reduction=0.206, text_vs_uma=0.502, loss_ctc=3.272, loss=3.272, backward_time=0.114, optim_step_time=0.047, optim0_lr0=3.122e-04, train_time=0.326
+[alab02] 2024-08-03 21:55:28,976 (trainer:720) INFO: 47epoch:train:3026-3300batch: iter_time=1.796e-04, forward_time=0.089, uma_reduction=0.206, text_vs_uma=0.500, loss_ctc=3.311, loss=3.311, backward_time=0.110, optim_step_time=0.047, optim0_lr0=3.120e-04, train_time=0.319
+[alab02] 2024-08-03 21:56:56,091 (trainer:720) INFO: 47epoch:train:3301-3575batch: iter_time=1.893e-04, forward_time=0.086, uma_reduction=0.204, text_vs_uma=0.507, loss_ctc=3.369, loss=3.369, backward_time=0.110, optim_step_time=0.047, optim0_lr0=3.118e-04, train_time=0.316
+[alab02] 2024-08-03 21:58:22,949 (trainer:720) INFO: 47epoch:train:3576-3850batch: iter_time=1.586e-04, forward_time=0.087, uma_reduction=0.201, text_vs_uma=0.517, loss_ctc=3.313, loss=3.313, backward_time=0.109, optim_step_time=0.047, optim0_lr0=3.117e-04, train_time=0.316
+[alab02] 2024-08-03 21:59:51,760 (trainer:720) INFO: 47epoch:train:3851-4125batch: iter_time=2.165e-04, forward_time=0.090, uma_reduction=0.200, text_vs_uma=0.519, loss_ctc=3.164, loss=3.164, backward_time=0.114, optim_step_time=0.047, optim0_lr0=3.115e-04, train_time=0.323
+[alab02] 2024-08-03 22:01:19,114 (trainer:720) INFO: 47epoch:train:4126-4400batch: iter_time=1.415e-04, forward_time=0.087, uma_reduction=0.196, text_vs_uma=0.527, loss_ctc=3.380, loss=3.380, backward_time=0.111, optim_step_time=0.047, optim0_lr0=3.113e-04, train_time=0.317
+[alab02] 2024-08-03 22:02:46,400 (trainer:720) INFO: 47epoch:train:4401-4675batch: iter_time=1.433e-04, forward_time=0.087, uma_reduction=0.199, text_vs_uma=0.519, loss_ctc=3.501, loss=3.501, backward_time=0.110, optim_step_time=0.046, optim0_lr0=3.112e-04, train_time=0.317
+[alab02] 2024-08-03 22:04:15,263 (trainer:720) INFO: 47epoch:train:4676-4950batch: iter_time=1.500e-04, forward_time=0.089, uma_reduction=0.204, text_vs_uma=0.506, loss_ctc=3.278, loss=3.278, backward_time=0.113, optim_step_time=0.047, optim0_lr0=3.110e-04, train_time=0.323
+[alab02] 2024-08-03 22:05:46,159 (trainer:720) INFO: 47epoch:train:4951-5225batch: iter_time=1.993e-04, forward_time=0.093, uma_reduction=0.210, text_vs_uma=0.493, loss_ctc=3.235, loss=3.235, backward_time=0.115, optim_step_time=0.047, optim0_lr0=3.108e-04, train_time=0.330
+[alab02] 2024-08-03 22:07:14,861 (trainer:720) INFO: 47epoch:train:5226-5500batch: iter_time=1.737e-04, forward_time=0.090, uma_reduction=0.205, text_vs_uma=0.507, loss_ctc=3.163, loss=3.163, backward_time=0.113, optim_step_time=0.047, optim0_lr0=3.107e-04, train_time=0.322
+[alab02] 2024-08-03 22:07:57,524 (trainer:338) INFO: 47epoch results: [train] iter_time=2.649e-04, forward_time=0.089, uma_reduction=0.205, text_vs_uma=0.504, loss_ctc=3.288, loss=3.288, backward_time=0.112, optim_step_time=0.047, optim0_lr0=3.122e-04, train_time=0.321, time=29 minutes and 33.6 seconds, total_count=259205, gpu_max_cached_mem_GB=24.160, [valid] uma_reduction=0.161, text_vs_uma=0.630, loss_ctc=4.811, cer_ctc=0.063, cer=0.063, loss=4.811, time=26.29 seconds, total_count=10340, gpu_max_cached_mem_GB=24.160, [att_plot] time=11.01 seconds, total_count=0, gpu_max_cached_mem_GB=24.160
+[alab02] 2024-08-03 22:08:00,731 (trainer:384) INFO: There are no improvements in this epoch
+[alab02] 2024-08-03 22:08:00,762 (trainer:440) INFO: The model files were removed: exp_uma_mamba_0617/asr_train_asr_uma_mamba_raw_zh_char_sp/35epoch.pth
+[alab02] 2024-08-03 22:08:00,762 (trainer:272) INFO: 48/50epoch started. Estimated time to finish: 1 hour, 29 minutes and 47.52 seconds
+[alab02] 2024-08-03 22:09:31,738 (trainer:720) INFO: 48epoch:train:1-275batch: iter_time=0.002, forward_time=0.091, uma_reduction=0.205, text_vs_uma=0.504, loss_ctc=3.048, loss=3.048, backward_time=0.115, optim_step_time=0.048, optim0_lr0=3.105e-04, train_time=0.330
+[alab02] 2024-08-03 22:11:00,644 (trainer:720) INFO: 48epoch:train:276-550batch: iter_time=1.643e-04, forward_time=0.090, uma_reduction=0.199, text_vs_uma=0.518, loss_ctc=3.364, loss=3.364, backward_time=0.113, optim_step_time=0.047, optim0_lr0=3.103e-04, train_time=0.323
+[alab02] 2024-08-03 22:12:20,521 (trainer:662) WARNING: The grad norm is nan. Skipping updating the model.
+[alab02] 2024-08-03 22:12:28,630 (trainer:720) INFO: 48epoch:train:551-825batch: iter_time=1.875e-04, forward_time=0.089, uma_reduction=0.199, text_vs_uma=0.518, loss_ctc=3.383, loss=3.383, backward_time=0.110, optim_step_time=0.046, optim0_lr0=3.102e-04, train_time=0.320
+[alab02] 2024-08-03 22:13:55,377 (trainer:720) INFO: 48epoch:train:826-1100batch: iter_time=1.855e-04, forward_time=0.086, uma_reduction=0.201, text_vs_uma=0.517, loss_ctc=3.199, loss=3.199, backward_time=0.109, optim_step_time=0.047, optim0_lr0=3.100e-04, train_time=0.315
+[alab02] 2024-08-03 22:15:24,554 (trainer:720) INFO: 48epoch:train:1101-1375batch: iter_time=1.577e-04, forward_time=0.091, uma_reduction=0.208, text_vs_uma=0.499, loss_ctc=3.049, loss=3.049, backward_time=0.114, optim_step_time=0.047, optim0_lr0=3.098e-04, train_time=0.324
+[alab02] 2024-08-03 22:16:51,717 (trainer:720) INFO: 48epoch:train:1376-1650batch: iter_time=1.826e-04, forward_time=0.087, uma_reduction=0.207, text_vs_uma=0.500, loss_ctc=3.242, loss=3.242, backward_time=0.110, optim_step_time=0.046, optim0_lr0=3.097e-04, train_time=0.317
+[alab02] 2024-08-03 22:18:19,586 (trainer:720) INFO: 48epoch:train:1651-1925batch: iter_time=1.397e-04, forward_time=0.088, uma_reduction=0.209, text_vs_uma=0.497, loss_ctc=3.072, loss=3.072, backward_time=0.113, optim_step_time=0.046, optim0_lr0=3.095e-04, train_time=0.319
+[alab02] 2024-08-03 22:19:47,373 (trainer:720) INFO: 48epoch:train:1926-2200batch: iter_time=1.726e-04, forward_time=0.088, uma_reduction=0.209, text_vs_uma=0.492, loss_ctc=3.210, loss=3.210, backward_time=0.110, optim_step_time=0.046, optim0_lr0=3.093e-04, train_time=0.319
+[alab02] 2024-08-03 22:21:01,048 (trainer:662) WARNING: The grad norm is nan. Skipping updating the model.
+[alab02] 2024-08-03 22:21:15,376 (trainer:720) INFO: 48epoch:train:2201-2475batch: iter_time=1.570e-04, forward_time=0.088, uma_reduction=0.207, text_vs_uma=0.499, loss_ctc=3.231, loss=3.231, backward_time=0.111, optim_step_time=0.046, optim0_lr0=3.092e-04, train_time=0.320
+[alab02] 2024-08-03 22:22:42,413 (trainer:720) INFO: 48epoch:train:2476-2750batch: iter_time=1.607e-04, forward_time=0.087, uma_reduction=0.206, text_vs_uma=0.501, loss_ctc=3.338, loss=3.338, backward_time=0.110, optim_step_time=0.045, optim0_lr0=3.090e-04, train_time=0.316
+[alab02] 2024-08-03 22:24:09,718 (trainer:720) INFO: 48epoch:train:2751-3025batch: iter_time=1.430e-04, forward_time=0.087, uma_reduction=0.204, text_vs_uma=0.510, loss_ctc=3.169, loss=3.169, backward_time=0.112, optim_step_time=0.046, optim0_lr0=3.089e-04, train_time=0.317
+[alab02] 2024-08-03 22:25:39,072 (trainer:720) INFO: 48epoch:train:3026-3300batch: iter_time=1.642e-04, forward_time=0.089, uma_reduction=0.202, text_vs_uma=0.510, loss_ctc=3.325, loss=3.325, backward_time=0.113, optim_step_time=0.048, optim0_lr0=3.087e-04, train_time=0.325
+[alab02] 2024-08-03 22:27:06,718 (trainer:720) INFO: 48epoch:train:3301-3575batch: iter_time=1.756e-04, forward_time=0.088, uma_reduction=0.206, text_vs_uma=0.505, loss_ctc=3.163, loss=3.163, backward_time=0.112, optim_step_time=0.046, optim0_lr0=3.085e-04, train_time=0.318
+[alab02] 2024-08-03 22:28:35,340 (trainer:720) INFO: 48epoch:train:3576-3850batch: iter_time=1.443e-04, forward_time=0.089, uma_reduction=0.205, text_vs_uma=0.506, loss_ctc=3.146, loss=3.146, backward_time=0.112, optim_step_time=0.047, optim0_lr0=3.084e-04, train_time=0.322
+[alab02] 2024-08-03 22:30:03,805 (trainer:720) INFO: 48epoch:train:3851-4125batch: iter_time=1.537e-04, forward_time=0.089, uma_reduction=0.206, text_vs_uma=0.500, loss_ctc=3.157, loss=3.157, backward_time=0.112, optim_step_time=0.047, optim0_lr0=3.082e-04, train_time=0.321
+[alab02] 2024-08-03 22:31:32,467 (trainer:720) INFO: 48epoch:train:4126-4400batch: iter_time=1.603e-04, forward_time=0.090, uma_reduction=0.209, text_vs_uma=0.496, loss_ctc=3.242, loss=3.242, backward_time=0.113, optim_step_time=0.047, optim0_lr0=3.081e-04, train_time=0.322
+[alab02] 2024-08-03 22:33:02,195 (trainer:720) INFO: 48epoch:train:4401-4675batch: iter_time=1.926e-04, forward_time=0.091, uma_reduction=0.209, text_vs_uma=0.495, loss_ctc=3.363, loss=3.363, backward_time=0.113, optim_step_time=0.048, optim0_lr0=3.079e-04, train_time=0.326
+[alab02] 2024-08-03 22:34:31,002 (trainer:720) INFO: 48epoch:train:4676-4950batch: iter_time=1.686e-04, forward_time=0.090, uma_reduction=0.208, text_vs_uma=0.496, loss_ctc=3.247, loss=3.247, backward_time=0.111, optim_step_time=0.048, optim0_lr0=3.077e-04, train_time=0.323
+[alab02] 2024-08-03 22:36:00,390 (trainer:720) INFO: 48epoch:train:4951-5225batch: iter_time=1.636e-04, forward_time=0.091, uma_reduction=0.205, text_vs_uma=0.506, loss_ctc=3.226, loss=3.226, backward_time=0.112, optim_step_time=0.048, optim0_lr0=3.076e-04, train_time=0.325
+[alab02] 2024-08-03 22:37:29,273 (trainer:720) INFO: 48epoch:train:5226-5500batch: iter_time=1.919e-04, forward_time=0.090, uma_reduction=0.204, text_vs_uma=0.505, loss_ctc=3.237, loss=3.237, backward_time=0.111, optim_step_time=0.048, optim0_lr0=3.074e-04, train_time=0.323
+[alab02] 2024-08-03 22:38:11,821 (trainer:338) INFO: 48epoch results: [train] iter_time=2.722e-04, forward_time=0.089, uma_reduction=0.205, text_vs_uma=0.504, loss_ctc=3.221, loss=3.221, backward_time=0.112, optim_step_time=0.047, optim0_lr0=3.089e-04, train_time=0.321, time=29 minutes and 33.85 seconds, total_count=264720, gpu_max_cached_mem_GB=24.160, [valid] uma_reduction=0.164, text_vs_uma=0.619, loss_ctc=4.901, cer_ctc=0.063, cer=0.063, loss=4.901, time=26.91 seconds, total_count=10560, gpu_max_cached_mem_GB=24.160, [att_plot] time=10.3 seconds, total_count=0, gpu_max_cached_mem_GB=24.160
+[alab02] 2024-08-03 22:38:16,147 (trainer:384) INFO: There are no improvements in this epoch
+[alab02] 2024-08-03 22:38:16,180 (trainer:440) INFO: The model files were removed: exp_uma_mamba_0617/asr_train_asr_uma_mamba_raw_zh_char_sp/33epoch.pth
+[alab02] 2024-08-03 22:38:16,181 (trainer:272) INFO: 49/50epoch started. Estimated time to finish: 59 minutes and 56.03 seconds
+[alab02] 2024-08-03 22:39:46,043 (trainer:720) INFO: 49epoch:train:1-275batch: iter_time=0.003, forward_time=0.091, uma_reduction=0.205, text_vs_uma=0.501, loss_ctc=3.219, loss=3.219, backward_time=0.111, optim_step_time=0.047, optim0_lr0=3.072e-04, train_time=0.326
+[alab02] 2024-08-03 22:41:13,309 (trainer:720) INFO: 49epoch:train:276-550batch: iter_time=1.921e-04, forward_time=0.087, uma_reduction=0.208, text_vs_uma=0.498, loss_ctc=3.074, loss=3.074, backward_time=0.111, optim_step_time=0.046, optim0_lr0=3.071e-04, train_time=0.317
+[alab02] 2024-08-03 22:42:41,769 (trainer:720) INFO: 49epoch:train:551-825batch: iter_time=1.853e-04, forward_time=0.089, uma_reduction=0.201, text_vs_uma=0.513, loss_ctc=3.332, loss=3.332, backward_time=0.112, optim_step_time=0.046, optim0_lr0=3.069e-04, train_time=0.321
+[alab02] 2024-08-03 22:44:07,320 (trainer:720) INFO: 49epoch:train:826-1100batch: iter_time=1.576e-04, forward_time=0.085, uma_reduction=0.203, text_vs_uma=0.509, loss_ctc=3.254, loss=3.254, backward_time=0.106, optim_step_time=0.047, optim0_lr0=3.068e-04, train_time=0.311
+[alab02] 2024-08-03 22:45:33,372 (trainer:720) INFO: 49epoch:train:1101-1375batch: iter_time=2.118e-04, forward_time=0.085, uma_reduction=0.202, text_vs_uma=0.514, loss_ctc=3.090, loss=3.090, backward_time=0.110, optim_step_time=0.046, optim0_lr0=3.066e-04, train_time=0.313
+[alab02] 2024-08-03 22:46:59,196 (trainer:662) WARNING: The grad norm is nan. Skipping updating the model.
+[alab02] 2024-08-03 22:47:04,970 (trainer:720) INFO: 49epoch:train:1376-1650batch: iter_time=1.559e-04, forward_time=0.092, uma_reduction=0.207, text_vs_uma=0.505, loss_ctc=3.282, loss=3.282, backward_time=0.119, optim_step_time=0.046, optim0_lr0=3.064e-04, train_time=0.333
+[alab02] 2024-08-03 22:48:33,726 (trainer:720) INFO: 49epoch:train:1651-1925batch: iter_time=2.102e-04, forward_time=0.089, uma_reduction=0.211, text_vs_uma=0.491, loss_ctc=2.996, loss=2.996, backward_time=0.113, optim_step_time=0.047, optim0_lr0=3.063e-04, train_time=0.322
+[alab02] 2024-08-03 22:50:01,682 (trainer:720) INFO: 49epoch:train:1926-2200batch: iter_time=1.473e-04, forward_time=0.088, uma_reduction=0.215, text_vs_uma=0.481, loss_ctc=3.097, loss=3.097, backward_time=0.112, optim_step_time=0.046, optim0_lr0=3.061e-04, train_time=0.320
+[alab02] 2024-08-03 22:51:28,825 (trainer:720) INFO: 49epoch:train:2201-2475batch: iter_time=1.631e-04, forward_time=0.087, uma_reduction=0.207, text_vs_uma=0.501, loss_ctc=3.001, loss=3.001, backward_time=0.112, optim_step_time=0.046, optim0_lr0=3.060e-04, train_time=0.317
+[alab02] 2024-08-03 22:52:56,263 (trainer:720) INFO: 49epoch:train:2476-2750batch: iter_time=1.960e-04, forward_time=0.087, uma_reduction=0.202, text_vs_uma=0.512, loss_ctc=3.186, loss=3.186, backward_time=0.111, optim_step_time=0.044, optim0_lr0=3.058e-04, train_time=0.318
+[alab02] 2024-08-03 22:54:23,140 (trainer:720) INFO: 49epoch:train:2751-3025batch: iter_time=2.251e-04, forward_time=0.086, uma_reduction=0.205, text_vs_uma=0.508, loss_ctc=3.006, loss=3.006, backward_time=0.111, optim_step_time=0.046, optim0_lr0=3.057e-04, train_time=0.316
+[alab02] 2024-08-03 22:55:50,767 (trainer:720) INFO: 49epoch:train:3026-3300batch: iter_time=1.444e-04, forward_time=0.087, uma_reduction=0.205, text_vs_uma=0.501, loss_ctc=3.393, loss=3.393, backward_time=0.112, optim_step_time=0.045, optim0_lr0=3.055e-04, train_time=0.318
+[alab02] 2024-08-03 22:57:17,373 (trainer:720) INFO: 49epoch:train:3301-3575batch: iter_time=1.451e-04, forward_time=0.085, uma_reduction=0.204, text_vs_uma=0.507, loss_ctc=3.147, loss=3.147, backward_time=0.112, optim_step_time=0.043, optim0_lr0=3.053e-04, train_time=0.315
+[alab02] 2024-08-03 22:57:40,377 (trainer:662) WARNING: The grad norm is nan. Skipping updating the model.
+[alab02] 2024-08-03 22:58:43,489 (trainer:720) INFO: 49epoch:train:3576-3850batch: iter_time=2.105e-04, forward_time=0.085, uma_reduction=0.201, text_vs_uma=0.512, loss_ctc=3.555, loss=3.555, backward_time=0.109, optim_step_time=0.044, optim0_lr0=3.052e-04, train_time=0.313
+[alab02] 2024-08-03 23:00:07,854 (trainer:720) INFO: 49epoch:train:3851-4125batch: iter_time=1.926e-04, forward_time=0.083, uma_reduction=0.197, text_vs_uma=0.528, loss_ctc=3.233, loss=3.233, backward_time=0.109, optim_step_time=0.042, optim0_lr0=3.050e-04, train_time=0.307
+[alab02] 2024-08-03 23:01:32,034 (trainer:720) INFO: 49epoch:train:4126-4400batch: iter_time=1.739e-04, forward_time=0.083, uma_reduction=0.198, text_vs_uma=0.521, loss_ctc=3.237, loss=3.237, backward_time=0.107, optim_step_time=0.042, optim0_lr0=3.049e-04, train_time=0.306
+[alab02] 2024-08-03 23:02:57,388 (trainer:720) INFO: 49epoch:train:4401-4675batch: iter_time=1.320e-04, forward_time=0.084, uma_reduction=0.199, text_vs_uma=0.518, loss_ctc=3.367, loss=3.367, backward_time=0.110, optim_step_time=0.042, optim0_lr0=3.047e-04, train_time=0.310
+[alab02] 2024-08-03 23:04:24,691 (trainer:720) INFO: 49epoch:train:4676-4950batch: iter_time=1.677e-04, forward_time=0.087, uma_reduction=0.201, text_vs_uma=0.514, loss_ctc=3.380, loss=3.380, backward_time=0.111, optim_step_time=0.044, optim0_lr0=3.046e-04, train_time=0.317
+[alab02] 2024-08-03 23:05:51,526 (trainer:720) INFO: 49epoch:train:4951-5225batch: iter_time=2.189e-04, forward_time=0.086, uma_reduction=0.199, text_vs_uma=0.520, loss_ctc=3.306, loss=3.306, backward_time=0.109, optim_step_time=0.047, optim0_lr0=3.044e-04, train_time=0.315
+[alab02] 2024-08-03 23:07:19,249 (trainer:720) INFO: 49epoch:train:5226-5500batch: iter_time=1.662e-04, forward_time=0.088, uma_reduction=0.199, text_vs_uma=0.519, loss_ctc=3.138, loss=3.138, backward_time=0.112, optim_step_time=0.046, optim0_lr0=3.043e-04, train_time=0.319
+[alab02] 2024-08-03 23:08:00,518 (trainer:338) INFO: 49epoch results: [train] iter_time=3.083e-04, forward_time=0.087, uma_reduction=0.203, text_vs_uma=0.509, loss_ctc=3.212, loss=3.212, backward_time=0.111, optim_step_time=0.045, optim0_lr0=3.057e-04, train_time=0.317, time=29 minutes and 7.94 seconds, total_count=270235, gpu_max_cached_mem_GB=24.160, [valid] uma_reduction=0.161, text_vs_uma=0.634, loss_ctc=4.864, cer_ctc=0.063, cer=0.063, loss=4.864, time=26.33 seconds, total_count=10780, gpu_max_cached_mem_GB=24.160, [att_plot] time=10.06 seconds, total_count=0, gpu_max_cached_mem_GB=24.160
+[alab02] 2024-08-03 23:08:04,492 (trainer:384) INFO: There are no improvements in this epoch
+[alab02] 2024-08-03 23:08:04,520 (trainer:440) INFO: The model files were removed: exp_uma_mamba_0617/asr_train_asr_uma_mamba_raw_zh_char_sp/48epoch.pth
+[alab02] 2024-08-03 23:08:04,520 (trainer:272) INFO: 50/50epoch started. Estimated time to finish: 29 minutes and 57.05 seconds
+[alab02] 2024-08-03 23:09:33,715 (trainer:720) INFO: 50epoch:train:1-275batch: iter_time=0.003, forward_time=0.089, uma_reduction=0.205, text_vs_uma=0.506, loss_ctc=3.168, loss=3.168, backward_time=0.113, optim_step_time=0.045, optim0_lr0=3.041e-04, train_time=0.324
+[alab02] 2024-08-03 23:10:14,645 (trainer:662) WARNING: The grad norm is nan. Skipping updating the model.
+[alab02] 2024-08-03 23:11:00,508 (trainer:720) INFO: 50epoch:train:276-550batch: iter_time=1.904e-04, forward_time=0.087, uma_reduction=0.209, text_vs_uma=0.495, loss_ctc=3.136, loss=3.136, backward_time=0.108, optim_step_time=0.047, optim0_lr0=3.039e-04, train_time=0.315
+[alab02] 2024-08-03 23:12:28,660 (trainer:720) INFO: 50epoch:train:551-825batch: iter_time=1.864e-04, forward_time=0.089, uma_reduction=0.202, text_vs_uma=0.514, loss_ctc=2.999, loss=2.999, backward_time=0.112, optim_step_time=0.047, optim0_lr0=3.038e-04, train_time=0.320
+[alab02] 2024-08-03 23:13:56,252 (trainer:720) INFO: 50epoch:train:826-1100batch: iter_time=1.619e-04, forward_time=0.089, uma_reduction=0.205, text_vs_uma=0.504, loss_ctc=3.196, loss=3.196, backward_time=0.110, optim_step_time=0.046, optim0_lr0=3.036e-04, train_time=0.318
+[alab02] 2024-08-03 23:15:23,594 (trainer:720) INFO: 50epoch:train:1101-1375batch: iter_time=1.693e-04, forward_time=0.087, uma_reduction=0.211, text_vs_uma=0.491, loss_ctc=3.116, loss=3.116, backward_time=0.111, optim_step_time=0.045, optim0_lr0=3.035e-04, train_time=0.317
+[alab02] 2024-08-03 23:16:50,773 (trainer:720) INFO: 50epoch:train:1376-1650batch: iter_time=1.431e-04, forward_time=0.087, uma_reduction=0.208, text_vs_uma=0.500, loss_ctc=2.826, loss=2.826, backward_time=0.113, optim_step_time=0.044, optim0_lr0=3.033e-04, train_time=0.317
+[alab02] 2024-08-03 23:18:18,540 (trainer:720) INFO: 50epoch:train:1651-1925batch: iter_time=1.913e-04, forward_time=0.089, uma_reduction=0.204, text_vs_uma=0.506, loss_ctc=3.231, loss=3.231, backward_time=0.111, optim_step_time=0.045, optim0_lr0=3.032e-04, train_time=0.319
+[alab02] 2024-08-03 23:19:47,358 (trainer:720) INFO: 50epoch:train:1926-2200batch: iter_time=1.914e-04, forward_time=0.089, uma_reduction=0.206, text_vs_uma=0.500, loss_ctc=3.287, loss=3.287, backward_time=0.113, optim_step_time=0.046, optim0_lr0=3.030e-04, train_time=0.323
+[alab02] 2024-08-03 23:21:15,116 (trainer:720) INFO: 50epoch:train:2201-2475batch: iter_time=1.690e-04, forward_time=0.089, uma_reduction=0.206, text_vs_uma=0.502, loss_ctc=3.147, loss=3.147, backward_time=0.111, optim_step_time=0.046, optim0_lr0=3.029e-04, train_time=0.319
+[alab02] 2024-08-03 23:22:42,643 (trainer:720) INFO: 50epoch:train:2476-2750batch: iter_time=1.470e-04, forward_time=0.089, uma_reduction=0.199, text_vs_uma=0.517, loss_ctc=3.375, loss=3.375, backward_time=0.111, optim_step_time=0.045, optim0_lr0=3.027e-04, train_time=0.318
+[alab02] 2024-08-03 23:22:57,057 (trainer:662) WARNING: The grad norm is nan. Skipping updating the model.
+[alab02] 2024-08-03 23:24:10,854 (trainer:720) INFO: 50epoch:train:2751-3025batch: iter_time=1.574e-04, forward_time=0.089, uma_reduction=0.199, text_vs_uma=0.519, loss_ctc=3.230, loss=3.230, backward_time=0.113, optim_step_time=0.045, optim0_lr0=3.026e-04, train_time=0.320
+[alab02] 2024-08-03 23:25:38,313 (trainer:720) INFO: 50epoch:train:3026-3300batch: iter_time=1.637e-04, forward_time=0.088, uma_reduction=0.203, text_vs_uma=0.510, loss_ctc=3.198, loss=3.198, backward_time=0.112, optim_step_time=0.044, optim0_lr0=3.024e-04, train_time=0.318
+[alab02] 2024-08-03 23:27:05,729 (trainer:720) INFO: 50epoch:train:3301-3575batch: iter_time=1.622e-04, forward_time=0.087, uma_reduction=0.204, text_vs_uma=0.508, loss_ctc=3.136, loss=3.136, backward_time=0.112, optim_step_time=0.045, optim0_lr0=3.023e-04, train_time=0.318
+[alab02] 2024-08-03 23:28:32,857 (trainer:720) INFO: 50epoch:train:3576-3850batch: iter_time=1.505e-04, forward_time=0.087, uma_reduction=0.202, text_vs_uma=0.511, loss_ctc=3.272, loss=3.272, backward_time=0.110, optim_step_time=0.045, optim0_lr0=3.021e-04, train_time=0.317
+[alab02] 2024-08-03 23:29:59,329 (trainer:720) INFO: 50epoch:train:3851-4125batch: iter_time=1.318e-04, forward_time=0.086, uma_reduction=0.201, text_vs_uma=0.515, loss_ctc=3.270, loss=3.270, backward_time=0.110, optim_step_time=0.045, optim0_lr0=3.020e-04, train_time=0.314
+[alab02] 2024-08-03 23:31:27,008 (trainer:720) INFO: 50epoch:train:4126-4400batch: iter_time=1.677e-04, forward_time=0.088, uma_reduction=0.203, text_vs_uma=0.510, loss_ctc=3.121, loss=3.121, backward_time=0.111, optim_step_time=0.046, optim0_lr0=3.018e-04, train_time=0.319
+[alab02] 2024-08-03 23:32:26,525 (trainer:662) WARNING: The grad norm is nan. Skipping updating the model.
+[alab02] 2024-08-03 23:32:54,617 (trainer:720) INFO: 50epoch:train:4401-4675batch: iter_time=1.621e-04, forward_time=0.089, uma_reduction=0.203, text_vs_uma=0.509, loss_ctc=3.100, loss=3.100, backward_time=0.111, optim_step_time=0.046, optim0_lr0=3.016e-04, train_time=0.318
+[alab02] 2024-08-03 23:34:23,179 (trainer:720) INFO: 50epoch:train:4676-4950batch: iter_time=1.881e-04, forward_time=0.089, uma_reduction=0.206, text_vs_uma=0.502, loss_ctc=3.202, loss=3.202, backward_time=0.113, optim_step_time=0.045, optim0_lr0=3.015e-04, train_time=0.322
+[alab02] 2024-08-03 23:35:52,890 (trainer:720) INFO: 50epoch:train:4951-5225batch: iter_time=1.789e-04, forward_time=0.091, uma_reduction=0.200, text_vs_uma=0.519, loss_ctc=3.294, loss=3.294, backward_time=0.114, optim_step_time=0.047, optim0_lr0=3.013e-04, train_time=0.326
+[alab02] 2024-08-03 23:37:22,009 (trainer:720) INFO: 50epoch:train:5226-5500batch: iter_time=1.613e-04, forward_time=0.089, uma_reduction=0.196, text_vs_uma=0.527, loss_ctc=3.436, loss=3.436, backward_time=0.113, optim_step_time=0.046, optim0_lr0=3.012e-04, train_time=0.324
+[alab02] 2024-08-03 23:38:03,991 (trainer:338) INFO: 50epoch results: [train] iter_time=2.853e-04, forward_time=0.088, uma_reduction=0.204, text_vs_uma=0.508, loss_ctc=3.187, loss=3.187, backward_time=0.112, optim_step_time=0.045, optim0_lr0=3.026e-04, train_time=0.319, time=29 minutes and 22.86 seconds, total_count=275750, gpu_max_cached_mem_GB=24.160, [valid] uma_reduction=0.156, text_vs_uma=0.651, loss_ctc=5.097, cer_ctc=0.064, cer=0.064, loss=5.097, time=26.42 seconds, total_count=11000, gpu_max_cached_mem_GB=24.160, [att_plot] time=10.19 seconds, total_count=0, gpu_max_cached_mem_GB=24.160
+[alab02] 2024-08-03 23:38:08,091 (trainer:384) INFO: There are no improvements in this epoch
+[alab02] 2024-08-03 23:38:08,092 (trainer:458) INFO: The training was finished at 50 epochs 
+[alab02] 2024-08-03 23:38:08,130 (average_nbest_models:69) INFO: Averaging 10best models: criterion="valid.cer": exp_uma_mamba_0617/asr_train_asr_uma_mamba_raw_zh_char_sp/valid.cer.ave_10best.pth
+# Accounting: time=19792 threads=1
+# Ended (code 0) at Sat Aug  3 23:38:13 CST 2024, elapsed time 19792 seconds
